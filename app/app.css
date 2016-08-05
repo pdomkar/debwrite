@@ -20,3 +20,95 @@
   content: "";
   padding: 0;
 }
+
+div.form-group button.btn {
+  margin: 0 10px 0 10px;
+}
+
+h2 {
+  margin-top: 50px !important;
+}
+
+.form-horizontal.newEntry .row.cont {
+  border: 1px solid black;
+}
+
+/** tree ui drag and drop **/
+
+.angular-ui-tree-handle {
+  background: #f8faff;
+  border: 1px solid #dae2ea;
+  color: #7c9eb2;
+  padding: 10px 10px;
+}
+
+.angular-ui-tree-handle:hover {
+  color: #438eb9;
+  background: #f4f6f7;
+  border-color: #dce2e8;
+}
+
+.angular-ui-tree-placeholder {
+  background: #f0f9ff;
+  border: 2px dashed #bed2db;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+tr.angular-ui-tree-empty {
+  height:100px
+}
+
+.group-title {
+  background-color: #687074 !important;
+  color: #FFF !important;
+}
+
+
+/* --- Tree --- */
+.tree-node {
+  border: 1px solid #dae2ea;
+  background: #f8faff;
+  color: #7c9eb2;
+}
+
+.nodrop {
+  background-color: #f2dede;
+}
+
+.tree-node-content {
+  margin: 10px;
+}
+.tree-handle {
+  padding: 10px;
+  background: #428bca;
+  color: #FFF;
+  margin-right: 10px;
+}
+
+.angular-ui-tree-handle:hover {
+}
+
+.angular-ui-tree-placeholder {
+  background: #f0f9ff;
+  border: 2px dashed #bed2db;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.form-horizontal .control-label {
+  text-align: left !important;
+}
+
+.col-sm-1, .col-xs-1, .col-md-1, .col-lg-1{
+  width: auto !important;
+}
+
+
+
+label.col-lg-1, label.col-lg-10, label.col-lg-11, label.col-lg-12, label.col-lg-2, label.col-lg-3, label.col-lg-4, label.col-lg-5, label.col-lg-6, label.col-lg-7, label.col-lg-8, label.col-lg-9, label.col-md-1, label.col-md-10, label.col-md-11, label.col-md-12, label.col-md-2, label.col-md-3, label.col-md-4, label.col-md-5, label.col-md-6, label.col-md-7, label.col-md-8, label.col-md-9, label.col-sm-1, label.col-sm-10, label.col-sm-11, label.col-sm-12, label.col-sm-2, label.col-sm-3, label.col-sm-4, label.col-sm-5, label.col-sm-6, label.col-sm-7, label.col-sm-8, label.col-sm-9, label.col-xs-1, label.col-xs-10, label.col-xs-11, label.col-xs-12, label.col-xs-2, label.col-xs-3, label.col-xs-4, label.col-xs-5, label.col-xs-6, label.col-xs-7, label.col-xs-8, label.col-xs-9 {
+  padding-left: 0px !important;
+  margin-right: -22px !important;
+}

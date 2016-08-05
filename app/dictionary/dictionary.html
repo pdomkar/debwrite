@@ -1,0 +1,72 @@
+<div data-ng-init="init()">
+    <div ng-if="alert != null" class="alert alert-{{alert.type}}" role="alert">
+        <a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {{alert.text}}
+    </div>
+
+    <h2>{{dictionary.dict_name}} (DEBWrite)</h2>
+
+    <a ng-href="#/newEntry/{{dictionary.dict_code}}" class="btn btn-primary">Create entry</a>
+
+    <p>Preview all: <span ng-repeat="template in dictionary.templates">
+                    <a ng-href="">{{template.name}}</a> |
+                </span>
+                <span ng-repeat="htemplate in dictionary.htemplates">
+                                <a ng-href="">{{htemplate.name}}</a> |
+                            </span>
+    </p>
+    <table st-table="entriesDisplayed" st-safe-src="entries" class="table table-striped">
+        <thead>
+        <tr>
+            <th st-sort="head">Entry</th>
+            <th st-sort="author">Author</th>
+            <th>Last edit</th>
+            <th>XSLT Preview</th>
+            <th>Handlebars Preview</th>
+            <th>XML</th>
+            <th class="text-right">Action</th>
+        </tr>
+        <tr>
+            <th>
+                <input st-search="head" placeholder="Search for entry . . ." class="input-sm form-control" type="search"/>
+            </th>
+            <th>
+                <input st-search="author" placeholder="Search for author . . ." class="input-sm form-control" type="search"/>
+            </th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="entry in entriesDisplayed">
+            <td>{{entry.head}}</td>
+            <td>{{entry.author}}</td>
+            <td>{{entry.last_edit}}</td>
+            <td>
+                <span ng-repeat="template in dictionary.templates">
+                    {{template.name}}
+                </span>
+            </td>
+            <td>
+                <span ng-repeat="htemplate in dictionary.htemplates">
+                    {{htemplate.name}}
+                </span>
+            </td>
+            <td><a href="" target="_blank">XML</a></td>
+            <td class="text-right">
+                <a ng-href="#/newEntry/{{dictionary.dict_code}}/{{entry.id}}" type="button" class="btn  btn-xs btn-info" uib-tooltip="Edit entry">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </a>
+                <button type="button" ng-click="removeEntry(entry.id)" ng-confirm-click="Do you realy want remove entry?" class="btn btn-xs btn-danger" uib-tooltip="Remove entry">
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+

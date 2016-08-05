@@ -1,1 +1,175 @@
-<h3>My dictionaries</h3>
+<div data-ng-init="init()">
+    <div ng-if="alert != null" class="alert alert-{{alert.type}}" role="alert">
+        <a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {{alert.text}}
+    </div>
+
+    <a ng-href="#/newDictionary" class="btn btn-success pull-right">
+        <i class="fa fa-plus" aria-hidden="true"></i> Create new dictionary
+    </a>
+
+    <div class="clearfix"></div>
+
+    <div ng-show="dictionaries.dict_r.length > 0">
+        <h3>Dictionaries for read</h3>
+        <table st-table="dictionariesRDisplayed" st-safe-src="dictionaries.dict_r" class="table table-striped">
+            <thead>
+                <tr>
+                    <th st-sort="name">Name</th>
+                    <th st-sort="code">Code</th>
+                    <th class="text-right">Action</th>
+                </tr>
+                <tr>
+                    <th>
+                        <input st-search="name" placeholder="Search for name . . ." class="input-sm form-control" type="search"/>
+                    </th>
+                    <th>
+                        <input st-search="code" placeholder="Search for code . . ." class="input-sm form-control" type="search"/>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="dictionary in dictionariesRDisplayed">
+                    <td>{{dictionary.name}}</td>
+                    <td>{{dictionary.code}}</td>
+                    <td class="text-right">
+                        <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default" uib-tooltip="Browse dictionary">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </a>
+                        <button type="button" class="btn  btn-xs btn-default" uib-tooltip="Export XML">
+                            <i class="fa fa-upload" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div ng-show="dictionaries.dict_w.length > 0">
+        <h3>Dictionaries for write</h3>
+        <table st-table="dictionariesWDisplayed" st-safe-src="dictionaries.dict_w" class="table table-striped">
+            <thead>
+            <tr>
+                <th st-sort="name">Name</th>
+                <th st-sort="code">Code</th>
+                <th class="text-right">Action</th>
+            </tr>
+            <tr>
+                <th>
+                    <input st-search="name" placeholder="Search for name . . ." class="input-sm form-control" type="search"/>
+                </th>
+                <th>
+                    <input st-search="code" placeholder="Search for code . . ." class="input-sm form-control" type="search"/>
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="dictionary in dictionariesWDisplayed">
+                <td>{{dictionary.name}}</td>
+                <td>{{dictionary.code}}</td>
+                <td class="text-right">
+                    <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default" uib-tooltip="Browse dictionary">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </a>
+                    <button type="button" class="btn  btn-xs btn-default" uib-tooltip="Export XML">
+                        <i class="fa fa-upload" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div ng-show="dictionaries.dict_m.length > 0">
+        <h3>My dictionaries</h3>
+        <table st-table="dictionariesMDisplayed" st-safe-src="dictionaries.dict_m" class="table table-striped">
+            <thead>
+            <tr>
+                <th st-sort="name">Name</th>
+                <th st-sort="code">Code</th>
+                <th class="text-right">Action</th>
+            </tr>
+            <tr>
+                <th>
+                    <input st-search="name" placeholder="Search for name . . ." class="input-sm form-control" type="search"/>
+                </th>
+                <th>
+                    <input st-search="code" placeholder="Search for code . . ." class="input-sm form-control" type="search"/>
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="dictionary in dictionariesMDisplayed">
+                <td>{{dictionary.name}}</td>
+                <td>{{dictionary.code}}</td>
+                <td class="text-right">
+                    <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default" uib-tooltip="Browse dictionary">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </a>
+                    <button type="button" class="btn  btn-xs btn-default" uib-tooltip="Export XML">
+                        <i class="fa fa-upload" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn  btn-xs btn-default" uib-tooltip="Import XML">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                    </button>
+                    <a ng-href="#/newDictionary/{{dictionary.code}}" class="btn btn-xs btn-info" uib-tooltip="Edit settings">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </a>
+                    <button type="button" ng-click="removeDictionary(dictionary.code)" ng-confirm-click="Do you realy want remove dictionary?" class="btn  btn-xs btn-danger" uib-tooltip="Remove dictionary">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div ng-show="dictionaries.dict_a.length > 0">
+        <h3>Dictionaries</h3>
+        <table st-table="dictionariesADisplayed" st-safe-src="dictionaries.dict_a" class="table table-striped">
+            <thead>
+            <tr>
+                <th st-sort="name">Name</th>
+                <th st-sort="code">Code</th>
+                <th class="text-right">Action</th>
+            </tr>
+            <tr>
+                <th>
+                    <input st-search="name" placeholder="Search for name . . ." class="input-sm form-control" type="search"/>
+                </th>
+                <th>
+                    <input st-search="code" placeholder="Search for code . . ." class="input-sm form-control" type="search"/>
+                </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="dictionary in dictionariesADisplayed">
+                <td>{{dictionary.name}}</td>
+                <td>{{dictionary.code}}</td>
+                <td class="text-right">
+                    <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default" uib-tooltip="Browse dictionary">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </a>
+                    <button type="button" class="btn  btn-xs btn-default" uib-tooltip="Export XML">
+                        <i class="fa fa-upload" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn  btn-xs btn-default" uib-tooltip="Import XML">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                    </button>
+                    <a ng-href="#/newDictionary/{{dictionary.code}}" class="btn btn-xs btn-info" uib-tooltip="Edit settings">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </a>
+                    <button type="button" ng-click="removeDictionary(dictionary.code)" ng-confirm-click="Do you realy want remove dictionary?" class="btn btn-xs btn-danger" uib-tooltip="Remove dictionary">
+                        <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

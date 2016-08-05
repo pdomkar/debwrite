@@ -1,0 +1,83 @@
+<div data-ng-init="init()">
+    <div ng-if="alert != null" class="alert alert-{{alert.type}}" role="alert">
+        <a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {{alert.text}}
+    </div>
+
+    <h2 ng-if="editPage">{{dictionary.dict_name}} - Edit entry</h2>
+    <h2 ng-if="!editPage">{{dictionary.dict_name}} - Create new entry</h2>
+
+    <form class="form-horizontal newEntry">
+        <div class="form-group" ng-repeat="(key,value) in dictionary.schema" ng-include="'container_renderer.html'" onload="parent=$parent.$parent">
+        </div>
+        <div class="row">
+            <div class="text-right">
+                <a ng-href="" class="btn btn-default">Preview</a>
+                <button ng-if="!editPage" ng-click="saveEntry()" type="submit" class="btn btn-success">Create entry</button>
+                <button ng-if="editPage" ng-click="saveEntry()" type="submit" class="btn btn-info">Edit entry</button>
+            </div>
+        </div>
+    </form>
+
+    {{newEntry}}
+    <script type="text/ng-template" id="container_renderer.html">
+        <div class="row cont" ng-if="value.type == 'container'">
+            <label class="col-sm-1 control-label">{{value.label}}</label>
+            <div class="form-group col-sm-11 pull-right" ng-repeat="(key,value) in value.containers" ng-include="'container_renderer.html'">
+            </div>
+        </div>
+        <div class="row" ng-if="value.type != 'container'">
+            O{{parentVal = ($parent.$parent.$parent.$parent.value).element}}OP
+            {{parentVal == null ? a = value.element : a = newEntry[parentVal]}}
+            q{{a.indexOf('"') == -1 ? a = a : a = a[value.element] }}q
+            r{{a}}r
+            <label for="{{value.element}}" class="col-sm-2 control-label">
+                <div ng-if="value.multiple == true" class="btn-group">
+                    <a class="btn btn-xs btn-info" ng-click="addContainerEntry(newEntry[a])"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                </div>
+                {{value.label}} :
+            </label>
+            <div class="col-sm-10" ng-if="value.type == 'select'">
+                    <select ng-if="value.multiple != true" name="{{value.element}}" ng-model="newEntry[a]" id="{{value.element}}" class="form-control">
+                        <option style="display:none" value="">Select {{value.element}} . . .</option>
+                        <option ng-repeat="option in value.options" value="{{option}}">{{option}}</option>
+                    </select>
+                    <select ng-if="value.multiple == true && newEntry[a].length <= 1" name="{{value.element}}" ng-model="newEntry[a][0]" id="{{value.element}}" class="form-control">
+                        <option style="display:none" value="">Select {{value.element}} . . .</option>
+                        <option ng-repeat="option in value.options" value="{{option}}">{{option}}</option>
+                    </select>
+                    <div class="input-group" ng-if="value.multiple == true && newEntry[a].length > 1" ng-repeat="val in newEntry[a] track by $index">
+                        <select name="{{value.element}}" ng-model="newEntry[a][$index]" id="{{value.element}}" class="form-control">
+                            <option style="display:none" value="">Select {{value.element}} . . .</option>
+                            <option ng-repeat="option in value.options" value="{{option}}">{{option}}</option>
+                        </select>
+                        <span class="input-group-btn">
+                            <a class="btn btn-warning" ng-click="removeContainerEntry(newEntry[a], $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                        </span>
+                    </div>
+            </div>
+            <div class="col-sm-10" ng-if="value.type == 'textarea'">
+                    <textarea ng-if="value.multiple != true" rows="3" ng-model="newEntry[a]" class="form-control" id="{{value.element}}"> </textarea>
+                    <textarea ng-if="value.multiple == true && newEntry[a].length <= 1" rows="3" ng-model="newEntry[a][0]" class="form-control" id="{{value.element}}"> </textarea>
+                    <div class="input-group" ng-if="value.multiple == true && newEntry[a].length > 1" ng-repeat="val in newEntry[a] track by $index">
+                        <textarea rows="2" ng-model="newEntry[a][$index]" class="form-control" id="{{value.element}}"> </textarea>
+                        <span class="input-group-btn">
+                            <a class="btn btn-warning" ng-click="removeContainerEntry(newEntry[a], $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                        </span>
+                    </div>
+            </div>
+            <div class="col-sm-10" ng-if="value.type != 'select' && value.type != 'textarea'">
+                <input ng-if="value.multiple != true" type="{{value.type}}" ng-model="newEntry[a]" class="form-control" id="{{value.element}}">
+                <input ng-if="value.multiple == true && newEntry[a].length <= 1" type="{{value.type}}" ng-model="newEntry[a][0]" class="form-control" id="{{value.element}}">
+                <div class="input-group" ng-if="value.multiple == true && newEntry[a].length > 1" ng-repeat="val in newEntry[a] track by $index">
+                    <input type="{{value.type}}" ng-model="newEntry[a][$index]" class="form-control" id="{{value.element}}">
+                    <span class="input-group-btn">
+                        <a class="btn btn-warning" ng-click="removeContainerEntry(newEntry[a], $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </script>
+
+</div>
