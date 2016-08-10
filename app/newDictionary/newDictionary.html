@@ -1,305 +1,394 @@
 <div data-ng-init="init()">
-    <div ng-if="alert != null" class="alert alert-{{alert.type}}" role="alert">
-        <a class="close" data-dismiss="alert" aria-label="close">&times;</a>
-        {{alert.text}}
-    </div>
 
     <div ng-show="showForm">
-        <h2 ng-if="editPage">Edit dictionary</h2>
-        <h2 ng-if="!editPage">Create new dictionary</h2>
-        <form class="form-horizontal">
-            <div class="form-group">
-                <label for="name" class="col-sm-2 control-label">Dictionary name:</label>
-                <div class="col-sm-10">
-                    <input type="text" ng-model="newDictionary.name" class="form-control" id="name">
-                </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 ng-if="editPage">Edit dictionary</h2>
+                <h2 ng-if="!editPage">Create new dictionary</h2>
             </div>
-            <div class="form-group">
-                <label for="code" class="col-sm-2 control-label">Dictionary short code:</label>
-                <div class="col-sm-10">
-                    <input ng-if="editPage" type="text" ng-model="newDictionary.code" ng-value="checked" class="form-control" id="code" disabled="disabled">
-                    <input ng-if="!editPage" type="text" ng-model="newDictionary.code" ng-value="checked" class="form-control" id="code">
-                </div>
-            </div>
+            <div class="panel-body">
+                <form class="form-horizontal p-a-1" name="newDictionaryForm" novalidate>
+                    <div class="form-group" show-errors>
+                        <label for="name" class="col-sm-2 control-label">Dictionary name:</label>
+                        <div class="col-sm-10">
+                            <input type="text" ng-model="newDictionary.name" name="name" class="form-control " id="name" required>
+                            <p class="help-block" ng-if="newDictionaryForm.name.$error.required">The dictionary name is required</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="editPage" show-errors>
+                        <label for="code" class="col-sm-2 control-label">Dictionary short code:</label>
+                        <div class="col-sm-10">
+                            <input type="text" ng-model="newDictionary.code" name="code" class="form-control" id="code" disabled="disabled" required>
+                            <p class="help-block" ng-if="newDictionaryForm.code.$error.required">The dictionary short code is required</p>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-if="!editPage" show-errors>
+                        <label for="code" class="col-sm-2 control-label">Dictionary short code:</label>
+                        <div class="col-sm-10">
+                            <input type="text" ng-model="newDictionary.code" name="code" class="form-control" id="code" required>
+                            <p class="help-block" ng-if="newDictionaryForm.code.$error.required">The dictionary short code is required</p>
+                        </div>
+                    </div>
 
-            <hr>
-            <h4>Entry structure:</h4>
+                    <hr>
+                    <h4>Entry structure:</h4>
 
-            <div class="row">
-                <div class="col-sm-12">
-                    <div ui-tree id="tree-root">
-                        <ol ui-tree-nodes ng-model="newDictionary.containers">
-                            <li ng-repeat="container in newDictionary.containers" ui-tree-node ng-include="'container_renderer.html'"></li>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div ui-tree id="tree-root">
+                                <ol ui-tree-nodes ng-model="newDictionary.containers">
+                                    <li ng-repeat="container in newDictionary.containers" ui-tree-node ng-include="'container_renderer.html'"></li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script type="text/ng-template" id="container_renderer.html">
+                        <div ui-tree-handle class="tree-node tree-node-content row">
+                            <ng-form name="innerForm">
+                                <input type="hidden" ng-model="container.id">
+                                <label for="element" class="col-sm-1 control-label" data-nodrag>Element</label>
+                                <div class="col-sm-2" ng-class="{ 'has-error': innerForm.element.$error.required }" data-nodrag>
+                                    <input type="text" ng-model="container.element" name="element" class="form-control" id="element" required>
+                                </div>
+                                <label for="label" class="col-sm-1 control-label" data-nodrag>Label</label>
+                                <div class="col-sm-1" ng-class="{ 'has-error': innerForm.label.$error.required }" data-nodrag>
+                                    <input type="text" ng-model="container.label" name="label" class="form-control" id="label" required>
+                                </div>
+                                <label for="headword" class="col-sm-1 control-label" data-nodrag>Headword</label>
+                                <div class="col-sm-1" data-nodrag>
+                                    <input type="radio" name="headword" ng-change="changeHeadword(container.id)" ng-model="container.headword" id="headword" value="true">
+                                </div>
+                                <label for="multiple" class="col-sm-1 control-label" data-nodrag>Multiple</label>
+                                <div class="col-sm-1" data-nodrag>
+                                    <input type="checkbox" ng-model="container.multiple" id="multiple" >
+                                </div>
+                                <label for="required" class="col-sm-1 control-label" data-nodrag>Required</label>
+                                <div class="col-sm-1" data-nodrag>
+                                    <input type="checkbox" ng-model="container.required" id="required" >
+                                </div>
+                                <label for="type" class="col-sm-1 control-label" data-nodrag>Type</label>
+                                <div class="col-sm-1" ng-class="{ 'has-error': innerForm.type.$error.required }">
+                                    <select ng-model="container.type" name="type" class="form-control" id="type" data-nodrag required>
+                                        <option value="text">text</option>
+                                        <option value="textarea">textarea</option>
+                                        <option value="number">number</option>
+                                        <option value="container">container</option>
+                                        <option value="file">file</option>
+                                        <option value="select">select</option>
+                                    </select></div>
+                                <label ng-show="container.type=='select'" for="options" class="col-sm-1 control-label" data-nodrag>Options</label>
+                                <div ng-show="container.type=='select'" ng-class="{ 'has-error': innerForm.options.$error.required }" class="col-sm-2" data-nodrag>
+                                    <input type="text" ng-model="container.options" name="options" class="form-control" id="options" ng-required="container.type == 'select'" placeholder="Separate by comma ','">
+                                </div>
+                                <button type="button" data-nodrag ng-click="removeContainer(newDictionary.containers, container.id)" class="btn btn-danger pull-right">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </ng-form>
+                        </div>
+                        <ol ng-if="container.type!='container'" ui-tree-nodes="" data-nodrop-enabled="true" ng-model="container.containers" ng-class="{hidden: collapsed}">
+                            <li ng-repeat="container in container.containers" ui-tree-node ng-include="'container_renderer.html'">
+                            </li>
                         </ol>
-                    </div>
-                </div>
-            </div>
 
-            <script type="text/ng-template" id="container_renderer.html">
-                <div ui-tree-handle class="tree-node tree-node-content row">
-                    <input type="hidden" ng-model="container.id">
-                    <label for="element" class="col-sm-1 control-label" data-nodrag>Element</label>
-                    <div class="col-sm-2" data-nodrag>
-                        <input type="text" ng-model="container.element" class="form-control" id="element">
-                    </div>
-                    <label for="label" class="col-sm-1 control-label" data-nodrag>Label</label>
-                    <div class="col-sm-1" data-nodrag>
-                        <input type="text" ng-model="container.label" class="form-control" id="label">
-                    </div>
-                    <label for="headword" class="col-sm-1 control-label" data-nodrag>Headword</label>
-                    <div class="col-sm-1" data-nodrag>
-                        <input type="radio" name="headword" ng-change="changeHeadword(container.id)" ng-model="container.headword" id="headword" value="true">
-                    </div>
-                    <label for="multiple" class="col-sm-1 control-label" data-nodrag>Multiple</label>
-                    <div class="col-sm-1" data-nodrag>
-                        <input type="checkbox" ng-model="container.multiple" id="multiple" >
-                    </div>
-                    <label for="type" class="col-sm-1 control-label" data-nodrag>Type</label>
-                    <div class="col-sm-1">
-                        <select ng-model="container.type" class="form-control" id="type" data-nodrag>
-                            <option value="text">text</option>
-                            <option value="textarea">textarea</option>
-                            <option value="number">number</option>
-                            <option value="container">container</option>
-                            <option value="file">file</option>
-                            <option value="select">select</option>
-                        </select></div>
-                    <label ng-show="container.type=='select'" for="options" class="col-sm-1 control-label" data-nodrag>Options</label>
-                    <div ng-show="container.type=='select'" class="col-sm-2" data-nodrag>
-                        <input type="text" ng-model="container.options" class="form-control" id="options">
-                    </div>
-                    <button type="button" data-nodrag ng-click="removeContainer(newDictionary.containers, container.id)" class="btn btn-danger pull-right">
-                        <i class="fa fa-trash" aria-hidden="true"></i>
+                        <ol ng-if="container.type=='container'" ui-tree-nodes="" ng-model="container.containers" ng-class="{hidden: collapsed}">
+                            <li ng-repeat="container in container.containers" ui-tree-node ng-include="'container_renderer.html'">
+                            </li>
+                        </ol>
+                    </script>
+
+                    <button type="button" ng-click="addContainer()" class="btn btn-primary">
+                        Add container
                     </button>
-                </div>
-                <ol ng-if="container.type!='container'" ui-tree-nodes="" data-nodrop-enabled="true" ng-model="container.containers" ng-class="{hidden: collapsed}">
-                    <li ng-repeat="container in container.containers" ui-tree-node ng-include="'container_renderer.html'">
-                    </li>
-                </ol>
 
-                <ol ng-if="container.type=='container'" ui-tree-nodes="" ng-model="container.containers" ng-class="{hidden: collapsed}">
-                    <li ng-repeat="container in container.containers" ui-tree-node ng-include="'container_renderer.html'">
-                    </li>
-                </ol>
-            </script>
+                    <div class="clearfix"></div>
 
-            <button type="button" ng-click="addContainer()" class="btn btn-primary">
-                Add container
-            </button>
-
-            <div class="clearfix"></div>
-
-            <button ng-if="editPage" type="button" ng-click="saveDictionary()" class="btn btn-success pull-right">
-                Edit dictionary
-            </button>
-            <button ng-if="!editPage" type="button" ng-click="saveDictionary()" class="btn btn-success pull-right">
-                Create dictionary
-            </button>
-        </form>
+                    <button ng-if="editPage" type="button" ng-click="saveDictionary()" class="btn btn-success pull-right">
+                        Edit dictionary
+                    </button>
+                    <button ng-if="!editPage" type="button" ng-click="saveDictionary()" class="btn btn-success pull-right">
+                        Create dictionary
+                    </button>
+                </form>
+            </div>
+        </div>
 
 
         <div ng-if="editPage">
-            <h2>Users</h2>
-            <form class="form-inline">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <h2 class="col-sm-6 text-left">
+                            Users
+                        </h2>
+                        <div class="col-sm-6 text-right">
+                            <button class="btn btn-primary bottom" type="button" data-toggle="collapse" data-target="#addUser" aria-expanded="false">
+                                <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Add user
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="panel panel-default collapse" id="addUser">
+                        <div class="panel-heading">
+                            <b>New User</b>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-inline p-a-1" name="userForm">
+                                <label for="user" class="col-sm-1 control-label">User</label>
+                                    <div class="col-sm-6">
+                                        <selectize config='usersMyConfig' id="user" options='users' ng-model="addedUser.login"></selectize>
+                                    </div>
+                                <label for="permission" class="col-sm-1 control-label">Permission</label>
+                                <div class="col-sm-2">
+                                    <select ng-model="addedUser.perm" id="permission" class="form-control" style="width:100%;" required>
+                                        <option value="r" ng-selected="true">Read only</option>
+                                        <option value="e">Editor</option>
+                                        <option value="m">Manager</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="button" ng-click="addUser(addedUser)" class="btn btn-success">
+                                        Add user
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <table st-table="dictionaryUsersDisplayed" st-safe-src="dictionaryUsers" class="table table-striped p-a-1">
+                        <thead>
+                        <tr>
+                            <th st-sort="login">Login</th>
+                            <th st-sort="name">Name</th>
+                            <th st-sort="email">Email</th>
+                            <th>Permission</th>
+                            <th class="text-right">Action</th>
+                        </tr>
+                        <tr>
+                            <th>
+                                <input st-search="login" placeholder="Search for login . . ." class="input-sm form-control" type="search"/>
+                            </th>
+                            <th>
+                                <input st-search="name" placeholder="Search for name . . ." class="input-sm form-control" type="search"/>
+                            </th>
+                            <th>
+                                <input st-search="email" placeholder="Search for email . . ." class="input-sm form-control" type="search"/>
+                            </th>
+                            <th>
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="user in dictionaryUsersDisplayed">
+                            <td>{{user.login}}<span ng-if="user.login == dictionaryOwner" class="label label-primary" style="margin-left: 10px;">Owner</span></td>
+                            <td>{{user.name}}</td>
+                            <td>{{user.email}}</td>
+                            <td>
+                                <select ng-model="user.perm" ng-change="savePermission(user)" class="form-control">
+                                    <option value="r">Read only</option>
+                                    <option value="e">Editor</option>
+                                    <option value="m">Manager</option>
+                                </select>
+                            </td>
+                            <td class="text-right">
+                                <button type="button" ng-if="user.login != dictionaryOwner" ng-click="removeUser($event, user.login)" class="btn  btn-xs btn-danger" uib-tooltip="Remove user">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                    <label for="user" class="col-sm-1 control-label">User</label>
-                    <div class="col-sm-6">
-                        <selectize config='usersMyConfig' id="user" options='users' ng-model="addedUser.login"></selectize>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <h2 class="col-sm-6 text-left">
+                            XSLT output templates
+                        </h2>
+                        <div class="col-sm-6 text-right">
+                            <button class="btn btn-primary bottom" type="button" data-toggle="collapse" data-target="#addXsltTemplate" aria-expanded="false">
+                                <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Add XSLT template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="panel panel-default collapse" id="addXsltTemplate">
+                        <div class="panel-heading">
+                            <b>New XSLT output templates</b> <small><a href="http://zvon.org/xxl/XSLTutorial/Output/" target="_blank">(info)</a></small>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal p-a-1" name="xsltForm" novalidate>
+                                <div class="form-group" style="display: inline" show-errors="">
+                                    <label for="nameAddedXT" class="col-sm-1 control-label" data-nodrag>Name</label>
+                                    <div class="col-sm-11" data-nodrag>
+                                        <input type="text" style="width: 50%" ng-model="addedXSLTTemplate.name" name="name" class="form-control" id="nameAddedXT" required>
+                                        <p class="help-block"  style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.name.$error.required">The name of xslt template is required</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: inline" show-errors="">
+                                    <label for="codeAddedXT" class="col-sm-1 control-label" data-nodrag>Code</label>
+                                    <div class="col-sm-11" data-nodrag>
+                                        <input type="text" style="width: 50%" ng-model="addedXSLTTemplate.code" name="code" class="form-control" id="codeAddedXT" required>
+                                        <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.code.$error.required">The code of xslt template is required</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" show-errors="">
+                                    <label for="templateAddedxT" class="col-sm-1 control-label" data-nodrag>Template</label>
+                                    <div class="col-sm-11" data-nodrag>
+                                        <textarea ng-model="addedXSLTTemplate.template" rows="5" name="template" class="form-control" id="templateAddedxT"required></textarea>
+                                        <p class="help-block" ng-if="xsltForm.template.$error.required">The template of xslt template is required</p>
+                                    </div>
+                                </div>
+                                <div class="form-group text-right">
+                                    <button type="button" ng-click="generateXSLTTemplate(addedXSLTTemplate)" class="btn  btn-info" uib-tooltip="Generate from setting">
+                                        <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
+                                    </button>
+                                    <button type="button" ng-click="addXSLTTemplate(xsltForm)" class="btn btn-success" uib-tooltip="Create XSLT template">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
-
-                    <label for="permission" class="col-sm-1 control-label">Permission</label>
-                    <div class="col-sm-2">
-                        <select ng-model="addedUser.perm" id="permission" class="form-control" style="width:100%;" required>
-                            <option value="">_Select permission_</option>
-                            <option value="r">Read only</option>
-                            <option value="e">Editor</option>
-                            <option value="m">Manager</option>
-                        </select>
+                    <h2>XSLT output templates <small><a href="http://zvon.org/xxl/XSLTutorial/Output/" target="_blank">(info)</a></small></h2>
+                    <div ng-repeat="xsltTemplate in xsltTemplates">
+                        <form class="form-horizontal p-a-1" name="xsltForm" novalidate>
+                            <div class="form-group" style="display: inline" show-errors="">
+                                <label for="nameXT" class="col-sm-1 control-label" data-nodrag>Name</label>
+                                <div class="col-sm-11" data-nodrag>
+                                    <input type="text" style="width: 50%" ng-model="xsltTemplate.name" name="name" class="form-control" id="nameXT" disabled="disabled" required>
+                                    <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.name.$error.required">The name of xslt template is required</p>
+                                </div>
+                            </div>
+                            <div class="form-group" style="display: inline" show-errors="">
+                                <label for="codeXT" class="col-sm-1 control-label" data-nodrag>Code</label>
+                                <div class="col-sm-11" data-nodrag>
+                                    <input type="text" style="width: 50%" ng-model="xsltTemplate.code" name="code" class="form-control" id="codeXT" required>
+                                    <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.code.$error.required">The code of xslt template is required</p>
+                                </div>
+                            </div>
+                            <div class="form-group" show-errors="">
+                                <label for="templateXT" class="col-sm-1 control-label" data-nodrag>Template</label>
+                                <div class="col-sm-11" data-nodrag>
+                                    <textarea ng-model="xsltTemplate.template" name="template" rows="5" class="form-control" id="templateXT" required></textarea>
+                                    <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.template.$error.required">The template of xslt template is required</p>
+                                </div>
+                            </div>
+                            <div class="form-group text-right">
+                                <button type="button" ng-click="generateXSLTTemplate(xsltTemplate)" class="btn btn-info" uib-tooltip="Generate from setting">
+                                    <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
+                                </button>
+                                <button type="button" ng-click="editXSLTTemplate(xsltTemplate, xsltForm)" class="btn btn-success" uib-tooltip="Save XSLT template">
+                                    <i class="fa fa-save" aria-hidden="true"></i>&nbsp; Save
+                                </button>
+                                <button type="button" ng-click="removeXSLTTemplate($event, xsltTemplate)" class="btn btn-danger" uib-tooltip="Remove XSLT template">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>&nbsp; Remove
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="col-sm-2">
-                        <button type="button" ng-click="addUser(addedUser)" class="btn btn-success">
-                            <i class="fa fa-plus" aria-hidden="true"></i> Add user
-                        </button>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="row">
+                        <h2 class="col-sm-6 text-left">
+                            Handlebar output templates
+                        </h2>
+                        <div class="col-sm-6 text-right">
+                            <button class="btn btn-primary bottom" type="button" data-toggle="collapse" data-target="#addHandlebarTemplate" aria-expanded="false">
+                                <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Add Handlebar template
+                            </button>
+                        </div>
                     </div>
-            </form>
-            <table st-table="dictionaryUsersDisplayed" st-safe-src="dictionaryUsers" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th st-sort="login">Login</th>
-                        <th st-sort="name">Name</th>
-                        <th st-sort="email">Email</th>
-                        <th>Permission</th>
-                        <th class="text-right">Action</th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <input st-search="login" placeholder="Search for login . . ." class="input-sm form-control" type="search"/>
-                        </th>
-                        <th>
-                            <input st-search="name" placeholder="Search for name . . ." class="input-sm form-control" type="search"/>
-                        </th>
-                        <th>
-                            <input st-search="email" placeholder="Search for email . . ." class="input-sm form-control" type="search"/>
-                        </th>
-                        <th>
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="user in dictionaryUsersDisplayed">
-                        <td>{{user.login}}<span ng-if="user.login == dictionaryOwner" class="label label-primary" style="margin-left: 10px;">Owner</span></td>
-                        <td>{{user.name}}</td>
-                        <td>{{user.email}}</td>
-                        <td>
-                            <select ng-model="user.perm" ng-change="savePermission(user)" class="form-control">
-                                <option value="r">Read only</option>
-                                <option value="e">Editor</option>
-                                <option value="m">Manager</option>
-                            </select>
-                        </td>
-                        <td class="text-right">
-                            <button type="button" ng-if="user.login != dictionaryOwner" ng-click="removeUser(user.login)" ng-confirm-click="Do you realy want remove user?" class="btn  btn-xs btn-danger" uib-tooltip="Remove user">
-                                <i class="fa fa-trash" aria-hidden="true"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                </div>
+                <div class="panel-body">
+                    <div class="panel panel-default collapse" id="addHandlebarTemplate">
+                        <div class="panel-heading">
+                            <b>New Handlebar output templates</b> <small><a href="http://handlebarsjs.com/" target="_blank">(info)</a></small>
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal p-a-1" name="handlebarForm" novalidate>
+                                <div class="form-group" style="display: inline;" show-errors="">
+                                    <label for="nameAddedHT" class="col-sm-1 control-label" data-nodrag>Name</label>
+                                    <div class="col-sm-11" data-nodrag>
+                                        <input type="text" style="width: 50%" ng-model="addedHtmlTemplate.name" name="name" class="form-control" id="nameAddedHT" required>
+                                        <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="handlebarForm.name.$error.required">The name of handlebar template is required</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="display: inline;" show-errors="">
+                                    <label for="codeAddedHT" class="col-sm-1 control-label" data-nodrag>Code</label>
+                                    <div class="col-sm-11" data-nodrag>
+                                        <input type="text" style="width: 50%" ng-model="addedHtmlTemplate.code" name="code" class="form-control" id="codeAddedHT" required>
+                                        <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="handlebarForm.code.$error.required">The code of handlebar template is required</p>
+                                    </div>
+                                </div>
+                                <div class="form-group" show-errors="">
+                                    <label for="templateAddedHT" class="col-sm-1 control-label" data-nodrag>Template</label>
+                                    <div class="col-sm-11" data-nodrag>
+                                        <textarea ng-model="addedHtmlTemplate.template" name="template" rows="5" class="form-control" id="templateAddedHT" required></textarea>
+                                        <p class="help-block" ng-if="handlebarForm.template.$error.required">The template of handlebar template is required</p>
+                                    </div>
+                                </div>
+                                <div class="form-group text-right">
+                                    <button type="button" ng-click="generateHandlebar(addedHtmlTemplate)" class="btn  btn-info" uib-tooltip="Generate from setting">
+                                        <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
+                                    </button>
+                                    <button type="button" ng-click="addHandlebar(handlebarForm)" class="btn btn-success" uib-tooltip="Create handlebar">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
 
-            <h2>XSLT output templates <small><a href="http://zvon.org/xxl/XSLTutorial/Output/" target="_blank">(info)</a></small></h2>
-                <button class="btn btn-primary" ng-show="!addXSLTTemplateShowBox" ng-click="addXSLTTemplateShowBox = !addXSLTTemplateShowBox">Show form for new XSLT template</button>
-                <button class="btn btn-primary" ng-show="addXSLTTemplateShowBox" ng-click="addXSLTTemplateShowBox = !addXSLTTemplateShowBox">Hide form for new XSLT template</button>
-                <div ng-show="addXSLTTemplateShowBox" data-slide-toggle="addXSLTTemplateShowBox"  data-slide-toggle-duration="500">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="nameAddedXT" class="col-sm-1 control-label" data-nodrag>Name</label>
-                            <div class="col-sm-5" data-nodrag>
-                                <input type="text" ng-model="addedXSLTTemplate.name" class="form-control" id="nameAddedXT">
+                    <h2>Handlebars output templates <small><a href="http://handlebarsjs.com/" target="_blank">(info)</a></small></h2>
+                    <div ng-repeat="htmlTemplate in htmlTemplates">
+                        <form class="form-horizontal p-a-1" name="handlebarForm" novalidate>
+                            <div class="form-group" style="display:inline;" show-errors="">
+                                <label for="nameHT" class="col-sm-1 control-label" data-nodrag>Name</label>
+                                <div class="col-sm-11" data-nodrag>
+                                    <input type="text" style="width: 50%;" ng-model="htmlTemplate.name" name="name" class="form-control" id="nameHT" disabled="disabled" required>
+                                    <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="handlebarForm.name.$error.required">The name of handlebar template is required</p>
+                                </div>
                             </div>
-                            <label for="codeAddedXT" class="col-sm-1 control-label" data-nodrag>Code</label>
-                            <div class="col-sm-5" data-nodrag>
-                                <input type="text" ng-model="addedXSLTTemplate.code" class="form-control" id="codeAddedXT">
+                            <div class="form-group" style="display:inline;" show-errors="">
+                                <label for="codeHT" class="col-sm-1 control-label" data-nodrag>Code</label>
+                                <div class="col-sm-11" data-nodrag>
+                                    <input type="text" style="width: 50%;" ng-model="htmlTemplate.code" name="code" class="form-control" id="codeHT" required>
+                                    <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="handlebarForm.code.$error.required">The code of handlebar template is required</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="templateAddedxT" class="col-sm-1 control-label" data-nodrag>Template</label>
-                            <div class="col-sm-11" data-nodrag>
-                                <textarea ng-model="addedXSLTTemplate.template" rows="5" class="form-control" id="templateAddedxT"></textarea>
+                            <div class="form-group" show-errors="">
+                                <label for="templateHT" class="col-sm-1 control-label" data-nodrag>Template</label>
+                                <div class="col-sm-11" data-nodrag>
+                                    <textarea ng-model="htmlTemplate.template" name="template" rows="5" class="form-control" id="templateHT" required></textarea>
+                                    <p class="help-block" ng-if="handlebarForm.template.$error.required">The template of handlebar template is required</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group text-right">
-                            <button type="button" ng-click="generateXSLTTemplate(addedXSLTTemplate)" class="btn  btn-info" uib-tooltip="Generate from setting">
-                                <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
-                            </button>
-                            <button type="button" ng-click="addXSLTTemplate()" class="btn btn-success" uib-tooltip="Create XSLT template">
-                                <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create
-                            </button>
-                        </div>
-                    </form>
+                            <div class="form-group text-right">
+                                <button type="button" ng-click="generateHandlebar(htmlTemplate)" class="btn btn-info" uib-tooltip="Generate from setting">
+                                    <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
+                                </button>
+                                <button type="button" ng-click="editHandlebar(htmlTemplate, handlebarForm)" class="btn btn-success" uib-tooltip="Save handlebar">
+                                    <i class="fa fa-save" aria-hidden="true"></i>&nbsp; Save
+                                </button>
+                                <button type="button" ng-click="removeHandlebar($event, htmlTemplate)" class="btn btn-danger" uib-tooltip="Remove handlebar">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>&nbsp; Remove
+                                </button>
+                            </div>
+                        </form>
+                        <hr class="divider">
+                    </div>
                 </div>
-                <hr class="divider">
-                <hr class="divider">
-                <div ng-repeat="xsltTemplate in xsltTemplates">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="nameXT" class="col-sm-1 control-label" data-nodrag>Name</label>
-                            <div class="col-sm-5" data-nodrag>
-                                <input type="text" ng-model="xsltTemplate.name" class="form-control" id="nameXT" disabled="disabled">
-                            </div>
-                            <label for="codeXT" class="col-sm-1 control-label" data-nodrag>Code</label>
-                            <div class="col-sm-5" data-nodrag>
-                                <input type="text" ng-model="xsltTemplate.code" class="form-control" id="codeXT">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="templateXT" class="col-sm-1 control-label" data-nodrag>Template</label>
-                            <div class="col-sm-11" data-nodrag>
-                                <textarea ng-model="xsltTemplate.template" rows="5" class="form-control" id="templateXT"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group text-right">
-                            <button type="button" ng-click="generateXSLTTemplate(xsltTemplate)" class="btn btn-info" uib-tooltip="Generate from setting">
-                                <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
-                            </button>
-                            <button type="button" ng-click="editXSLTTemplate(xsltTemplate)" class="btn btn-success" uib-tooltip="Save XSLT template">
-                                <i class="fa fa-save" aria-hidden="true"></i>&nbsp; Save
-                            </button>
-                            <button type="button" ng-click="removeXSLTTemplate(xsltTemplate)" ng-confirm-click="Do you realy want remove XSLT template?" class="btn btn-danger" uib-tooltip="Remove XSLT template">
-                                <i class="fa fa-trash" aria-hidden="true"></i>&nbsp; Remove
-                            </button>
-                        </div>
-                    </form>
-                    <hr class="divider">
-                </div>
-
-            <h2>Handlebars output templates <small><a href="http://handlebarsjs.com/" target="_blank">(info)</a></small></h2>
-                <button class="btn btn-primary" ng-show="!addHandlebarShowBox" ng-click="addHandlebarShowBox = !addHandlebarShowBox">Show form for new handlebar</button>
-                <button class="btn btn-primary" ng-show="addHandlebarShowBox" ng-click="addHandlebarShowBox = !addHandlebarShowBox">Hide form for new handlebar</button>
-                <div ng-show="addHandlebarShowBox" data-slide-toggle="addHandlebarShowBox"  data-slide-toggle-duration="500">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="nameAddedHT" class="col-sm-1 control-label" data-nodrag>Name</label>
-                            <div class="col-sm-5" data-nodrag>
-                                <input type="text" ng-model="addedHtmlTemplate.name" class="form-control" id="nameAddedHT">
-                            </div>
-                            <label for="codeAddedHT" class="col-sm-1 control-label" data-nodrag>Code</label>
-                            <div class="col-sm-5" data-nodrag>
-                                <input type="text" ng-model="addedHtmlTemplate.code" class="form-control" id="codeAddedHT">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="templateAddedHT" class="col-sm-1 control-label" data-nodrag>Template</label>
-                            <div class="col-sm-11" data-nodrag>
-                                <textarea ng-model="addedHtmlTemplate.template" rows="5" class="form-control" id="templateAddedHT"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group text-right">
-                            <button type="button" ng-click="generateHandlebar(addedHtmlTemplate)" class="btn  btn-info" uib-tooltip="Generate from setting">
-                                <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
-                            </button>
-                            <button type="button" ng-click="addHandlebar()" class="btn btn-success" uib-tooltip="Create handlebar">
-                                <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                <hr class="divider">
-                <hr class="divider">
-                <div ng-repeat="htmlTemplate in htmlTemplates">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="nameHT" class="col-sm-1 control-label" data-nodrag>Name</label>
-                            <div class="col-sm-5" data-nodrag>
-                                <input type="text" ng-model="htmlTemplate.name" class="form-control" id="nameHT" disabled="disabled">
-                            </div>
-                            <label for="codeHT" class="col-sm-1 control-label" data-nodrag>Code</label>
-                            <div class="col-sm-5" data-nodrag>
-                                <input type="text" ng-model="htmlTemplate.code" class="form-control" id="codeHT">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="templateHT" class="col-sm-1 control-label" data-nodrag>Template</label>
-                            <div class="col-sm-11" data-nodrag>
-                                <textarea ng-model="htmlTemplate.template" rows="5" class="form-control" id="templateHT"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-group text-right">
-                            <button type="button" ng-click="generateHandlebar(htmlTemplate)" class="btn btn-info" uib-tooltip="Generate from setting">
-                                <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
-                            </button>
-                            <button type="button" ng-click="editHandlebar(htmlTemplate)" class="btn btn-success" uib-tooltip="Save handlebar">
-                                <i class="fa fa-save" aria-hidden="true"></i>&nbsp; Save
-                            </button>
-                            <button type="button" ng-click="removeHandlebar(htmlTemplate)" ng-confirm-click="Do you realy want remove handlebar?" class="btn btn-danger" uib-tooltip="Remove handlebar">
-                                <i class="fa fa-trash" aria-hidden="true"></i>&nbsp; Remove
-                            </button>
-                        </div>
-                    </form>
-                    <hr class="divider">
-                </div>
+            </div>
         </div>
     </div>
 

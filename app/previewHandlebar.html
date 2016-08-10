@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="debwrite" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="debwrite" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="debwrite" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="debwrite" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Debwrite</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dist/font-awesome/css/font-awesome.min.css">
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            if (getURLParameter('entry_id').indexOf(',') === -1) {
+                $.ajax({
+                    url: "https://abulafia.fi.muni.cz:9050/admin",
+                    jsonp: "callback",
+                    dataType: "jsonp",
+                    data: {
+                        action: "dict_info",
+                        code: getURLParameter('dict_code'),
+                        format: "template"
+                    },
+                    success: function (response) {
+                        var hTemplate = '';
+                        $.each(response.htemplates, function( index, value ) {
+                            if(value.code == getURLParameter('template_code')) {
+                                hTemplate = unescapeSemicolon(value.template);
+                            }
+                        });
+                        hTemplate = hTemplate.substring(hTemplate.indexOf('<body>')+6, hTemplate.indexOf('</body>'));
+                        $('#entry-template').append(hTemplate);
+                        var source = $('#entry-template').html();
+                        var template = Handlebars.compile(source);
+
+                        $.ajax({
+                            url: "https://abulafia.fi.muni.cz:9050/" + getURLParameter('dict_code'),
+                            jsonp: "callback",
+                            dataType: "jsonp",
+                            data: {
+                                action: "get",
+                                entry_id: getURLParameter('entry_id'),
+                                format: "json"
+                            },
+                            success: function (response) {
+                                var entry = {entry: {}};
+                                delete response.result.entry["@id"];
+                                setEntryRecursive(response.result.entry, entry);
+                                $('#main').append(template(entry));
+                            },
+                            fail: function (response) {
+                                //fail
+                            }
+                        });
+                    },
+                    fail: function (response) {
+                        //fail
+                    }
+                });
+            } else {
+            }
+        });
+
+        function setEntryRecursive(values, entry) {
+            $.each(values, function( index, value ) {
+                if(value.length != undefined && value.length > 0) {
+                    //TO DO ZANORENE
+                    var str = '';
+                    $.each(value, function( indexa, valueIn ) {
+                        console.log(valueIn.$);
+                        str += valueIn.$+';';
+                    });
+                    entry.entry[index] = str;
+                } else {
+                    if(value["@elem_type"] == "container") {
+                        delete value["@elem_type"];
+                        setEntryRecursive(value, entry);
+                    } else {
+                        entry.entry[index] = value.$;
+                    }
+                }
+            });
+        }
+
+        function escapeSemicolon(text) {
+            return text
+                    .replace(/;/g, "[-semicolon-]");
+        }
+
+        function unescapeSemicolon(text) {
+            return text
+                    .replace(/\[-semicolon-\]/g, ";");
+        }
+
+        function getURLParameter(sParam)
+        {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam)
+                {
+                    return sParameterName[1];
+                }
+            }
+        }
+
+
+    </script>
+</head>
+    <body>
+    <script id="entry-template" type="text/x-handlebars-template">
+
+    </script>
+    <div id="main">
+
+        </div>
+
+    </body>
+</html>

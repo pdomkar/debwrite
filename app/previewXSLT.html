@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="debwrite" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="debwrite" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="debwrite" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="debwrite" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Debwrite</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dist/font-awesome/css/font-awesome.min.css">
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "https://abulafia.fi.muni.cz:9050/" + getURLParameter('dict_code'),
+                jsonp: "callback",
+                dataType: "jsonp",
+                data: {
+                    action: "preview_multi",
+                    entry_id: getURLParameter('entry_id'),
+                    xslt: getURLParameter('template_code')
+                },
+                success: function (response) {
+                    console.log(response);
+                    if(response.status == "OK") {
+                        document.open();
+                        document.write(response.result);
+                        document.close();
+                    }
+                },
+                fail: function (response) {
+                    //fail
+                }
+            });
+        });
+
+
+
+        function getURLParameter(sParam)
+        {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam)
+                {
+                    return sParameterName[1];
+                }
+            }
+        }
+
+
+    </script>
+</head>
+    <body>
+
+
+    </body>
+</html>

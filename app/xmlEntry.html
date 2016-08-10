@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="debwrite" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="debwrite" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="debwrite" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="debwrite" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Debwrite</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/google/code-prettify/master/loader/skins/sunburst.css">
+
+    <script>
+        $(document).ready(function() {
+            if (getURLParameter('entry_id')) {
+                $.ajax({
+                    url: "https://abulafia.fi.muni.cz:9050/" + getURLParameter('dict_code'),
+                    jsonp: "callback",
+                    dataType: "jsonp",
+                    data: {
+                        action: "get",
+                        entry_id: getURLParameter('entry_id'),
+                        format: "xml"
+                    },
+                    success: function (response) {
+                        $('#main').append('<pre class="prettyprint lang-xml" style="font-size: 16px;">' + escapeHtml(response.result) + '</pre>');
+                    },
+                    fail: function (response) {
+                        //fail
+                    }
+                });
+            }
+        });
+
+        function escapeHtml(text) {
+            return text
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+        }
+
+        function getURLParameter(sParam)
+        {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam)
+                {
+                    return sParameterName[1];
+                }
+            }
+        }
+    </script>
+</head>
+    <body style="background: #333;">
+        <div id="main">
+        </div>
+    </body>
+</html>

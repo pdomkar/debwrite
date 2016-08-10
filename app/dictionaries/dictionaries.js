@@ -2,13 +2,12 @@
 
 angular.module('debwrite.dictionaries', ['smart-table', 'ui.bootstrap'])
 
-.controller('DictionariesCtrl', ['$scope', '$http', function($scope, $http) {
+.controller('DictionariesCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', '$routeParams', function($scope, $rootScope, $http, $mdDialog, $routeParams) {
     $scope.dictionaries = null;
     $scope.dictionariesRDisplayed = [];
     $scope.dictionariesWDisplayed = [];
     $scope.dictionariesMDisplayed = [];
     $scope.dictionariesADisplayed = [];
-    $scope.alert = null;
 
     $scope.loadDictionaries = function() {
         $http({
@@ -19,32 +18,43 @@ angular.module('debwrite.dictionaries', ['smart-table', 'ui.bootstrap'])
         }).
             then(function (response) {
                 $scope.dictionaries = response.data;
-                console.log($scope.dictionaries);
             }, function (response) {
                 $scope.dictionaries = response.data || "Request failed";
             });
     };
 
-    $scope.removeDictionary = function(codeOfDictionary) {
-        $http({
-            method: 'JSONP',
-            url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
-            params: {action: 'dict_del', code: codeOfDictionary},
-            responseType: 'json'
-        }).
-            then(function(response) {
-                if(response.data.status == 'OK') {
-                    $scope.alert = {text: "Dictionary was removed.", type: "success"};
-                } else {
-                    $scope.alert = {text: response.data.text, type: "danger"};
-                }
-            }, function(response) {
-                $scope.alert = {text: "Failure while removing dictionary.", type: "danger"};
-            });
-        $scope.loadDictionaries();
+    $scope.removeDictionary = function($event, codeOfDictionary) {
+        var confirm = $mdDialog.confirm()
+            .title('Realy remove?')
+            .textContent('Are you sure, that you realy want remove dictionary?')
+            .ariaLabel('Confirm removing')
+            .targetEvent($event)
+            .ok('Remove')
+            .cancel('Cancel');
+        $mdDialog.show(confirm).then(function() {
+            $http({
+                method: 'JSONP',
+                url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
+                params: {action: 'dict_del', code: codeOfDictionary},
+                responseType: 'json'
+            })
+                .then(function(response) {
+                    if(response.data.status == 'OK') {
+                        $rootScope.alert = {text: "Dictionary was removed.", type: "success"};
+                        $scope.loadDictionaries();
+                    } else {
+                        $rootScope.alert = {text: response.data.text, type: "danger"};
+                    }
+                }, function(response) {
+                    $rootScope.alert = {text: "Failure while removing dictionary.", type: "danger"};
+                });
+        }, function() {
+            //canceled
+        });
     };
 
     $scope.init = function() {
+        $rootScope.dictDetail = $routeParams.code;
         $scope.loadDictionaries();
     };
 

@@ -1,0 +1,45 @@
+<div data-ng-init="init()">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3>Import XML - {{dictionary.dict_name}}</h3>
+        </div>
+        <div class="panel-body">
+            <form class="form-horizontal p-a-1" name="importForm" novalidate>
+                <div class="form-group">
+                    <label for="file" class="col-sm-2 control-label">
+                        XML soubor pro import* :
+                    </label>
+                    <div class="col-sm-10">
+                         <input type="file" ng-file-model="import.file" name="file" class="form-control" id="file" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="delCurrent" class="col-sm-2 control-label">
+                        Delete current data :
+                    </label>
+                    <div class="col-sm-10 control-label">
+                        <input type="checkbox" ng-model="import.delCurrent" id="delCurrent">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="overEntries" class="col-sm-2 control-label">
+                        Overwrite entries :
+                    </label>
+                    <div class="col-sm-10 control-label">
+                        <input type="checkbox" ng-model="import.overEntries" id="overEntries" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" ng-click="importData()" class="btn btn-success pull-right">Import XML data</button>
+                </div>
+            </form>
+            <hr class="divider">
+            <h3>Log of import:</h3>
+            <div class="row">
+                <iframe style="min-height: 100rem;" class="col-sm-12" ng-src="{{trustSrc(srcLog)}}">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+

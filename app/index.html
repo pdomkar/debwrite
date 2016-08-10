@@ -9,15 +9,16 @@
   <title>Debwrite</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/normalize.css">
-  <link rel="stylesheet" href="bower_components/html5-boilerplate/dist/css/main.css">
+  <link rel="stylesheet" href="dist/html5-boilerplate/dist/css/normalize.css">
+  <link rel="stylesheet" href="dist/html5-boilerplate/dist/css/main.css">
   <link rel="stylesheet" href="app.css">
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="dist/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="dist/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="bower_components/angular-ui-tree/dist/angular-ui-tree.min.css">
-  <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.default.css">
+  <link rel="stylesheet" href="dist/angular-ui-tree/dist/angular-ui-tree.min.css">
+  <link rel="stylesheet" href="dist/selectize/dist/css/selectize.default.css">
+  <link rel="stylesheet" href="dist/angular-material/angular-material.min.css">
 
-  <script src="bower_components/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+  <script src="dist/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
 </head>
 
 <body>
@@ -36,11 +37,22 @@
         <ul class="nav navbar-nav">
           <li><a ng-href="#/dictionaries">Dictionaries</a></li>
         </ul>
+        <ul class="nav navbar-nav" ng-if="dictDetail">
+          <li><a ng-href="#/dictionaries/{{dictDetail}}/">Entries</a></li>
+        </ul>
       </div><!--/.nav-collapse -->
     </div>
   </nav>
+  <div ng-if="alert.text != ''" id="message">
+    <div class="alert alert-{{alert.type}}" role="alert">
+     <div class="container">
+       <a class="close" data-dismiss="alert" aria-label="close">&times;</a>
+       {{alert.text}}
+     </div>
+    </div>
+  </div>
 
-  <div class="container" style="margin-top: 5%;">
+  <div class="container" style="margin-top: 50px; padding-top: 10px;">
     <div ng-view></div>
   </div>
 
@@ -48,22 +60,27 @@
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
-  <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-route/angular-route.js"></script>
-  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="bower_components/angular-smart-table/dist/smart-table.min.js"></script>
-  <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-  <script src="bower_components/angular-ui-tree/dist/angular-ui-tree.min.js"></script>
-  <script src="bower_components/selectize/dist/js/standalone/selectize.min.js"></script>
-  <script src="bower_components/angular-selectize2/dist/angular-selectize.js"></script>
-  <script src="dist/xml-writer/lib/xml-writer.js"></script>
-
+  <script src="dist/jquery/dist/jquery.min.js"></script>
+  <script src="dist/angular/angular.js"></script>
+  <script src="dist/angular-route/angular-route.js"></script>
+  <script src="dist/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="dist/angular-smart-table/dist/smart-table.min.js"></script>
+  <script src="dist/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+  <script src="dist/angular-ui-tree/dist/angular-ui-tree.min.js"></script>
+  <script src="dist/selectize/dist/js/standalone/selectize.min.js"></script>
+  <script src="dist/angular-selectize2/dist/angular-selectize.js"></script>
+  <script src="dist/ng-file-model/ng-file-model.js"></script>
+  <script src="dist/angular-bootstrap-show-errors/src/showErrors.min.js"></script>
+  <script src="dist/angular-aria/angular-aria.min.js"></script>
+  <script src="dist/angular-animate/angular-animate.min.js"></script>
+  <script src="dist/angular-material/angular-material.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-sanitize.min.js"></script>
   <script src="app.js"></script>
   <script src="main.js"></script>
   <script src="dictionaries/dictionaries.js"></script>
   <script src="newDictionary/newDictionary.js"></script>
   <script src="dictionary/dictionary.js"></script>
   <script src="newEntry/newEntry.js"></script>
+  <script src="dictionaries/import/import.js"></script>
 </body>
 </html>

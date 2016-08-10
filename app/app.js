@@ -6,7 +6,10 @@ angular.module('debwrite', [
     'debwrite.dictionaries',
     'debwrite.newDictionary',
     'debwrite.dictionary',
-    'debwrite.newEntry'
+    'debwrite.newEntry',
+    'debwrite.import',
+    'ui.bootstrap.showErrors',
+    'ngMaterial'
 ]).
 config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
       $locationProvider.hashPrefix('');
@@ -36,25 +39,28 @@ config(['$locationProvider', '$routeProvider', function($locationProvider, $rout
               templateUrl: 'newEntry/newEntry.html',
               controller: 'NewEntryCtrl'
           }).
+          when('/dictionaries/import/:code', {
+              templateUrl: 'dictionaries/import/import.html',
+              controller: 'ImportCtrl'
+          }).
           otherwise('/dictionaries');
 
-}]).directive('ngConfirmClick', [
-    function(){
-        return {
-            priority: 1,
-            terminal: true,
-            link: function (scope, element, attr) {
-                var msg = attr.ngConfirmClick || "Are you sure?";
-                var clickAction = attr.ngClick;
-                element.bind('click',function (event) {
-                    if ( window.confirm(msg) ) {
-                        scope.$eval(clickAction)
-                    }
-                });
-            }
-        };
-    }])
-    .directive('slideToggle', [
+}]).config(['showErrorsConfigProvider', function(showErrorsConfigProvider) {
+        showErrorsConfigProvider.showSuccess(true);
+    }]).run(['$rootScope', '$timeout', '$routeParams', function($rootScope, $timeout, $routeParams) {
+
+        $rootScope.$watch('dictDetail', function(newVal, oldVal){
+
+                console.log(newVal);
+
+        }, true);
+        $rootScope.alert = {text: '', type: 'success'};
+        $rootScope.$watch('alert', function(newVal, oldVal){
+            $timeout(function() {
+                $rootScope.alert.text = '';
+            }, 3000);
+        }, true);
+    }]).directive('slideToggle', [
         function() {
             return {
                 restrict: 'A',
@@ -74,4 +80,65 @@ config(['$locationProvider', '$routeProvider', function($locationProvider, $rout
 
                 }
             };
-        }]);
+        }]).directive('showErrors', function ($timeout, showErrorsConfig) {
+        var getShowSuccess, linkFn;
+        getShowSuccess = function (options) {
+            var showSuccess;
+            showSuccess = showErrorsConfig.showSuccess;
+            if (options && options.showSuccess != null) {
+                showSuccess = options.showSuccess;
+            }
+            return showSuccess;
+        };
+        linkFn = function (scope, el, attrs, formCtrl) {
+            var blurred, inputEl, inputName, inputNgEl, options, showSuccess, toggleClasses;
+            blurred = false;
+            options = scope.$eval(attrs.showErrors);
+            showSuccess = getShowSuccess(options);
+            inputEl = el[0].querySelector('[name]');
+            inputNgEl = angular.element(inputEl);
+            inputName = inputNgEl.attr('name');
+            if (!inputName) {
+                throw 'show-errors element has no child input elements with a \'name\' attribute';
+            }
+            inputNgEl.bind('blur', function () {
+                blurred = true;
+                return toggleClasses(formCtrl[inputName].$invalid);
+            });
+            scope.$watch(function () {
+                return formCtrl[inputName] && formCtrl[inputName].$invalid;
+            }, function (invalid) {
+                if (!blurred) {
+                    return;
+                }
+                return toggleClasses(invalid);
+            });
+            scope.$on('show-errors-check-validity', function () {
+                return toggleClasses(formCtrl[inputName].$invalid);
+            });
+            scope.$on('show-errors-reset', function () {
+                return $timeout(function () {
+                    el.removeClass('has-error');
+                    el.removeClass('has-success');
+                    return blurred = false;
+                }, 0, false);
+            });
+            return toggleClasses = function (invalid) {
+                el.toggleClass('has-error', invalid);
+                if (showSuccess) {
+                    return el.toggleClass('has-success', !invalid);
+                }
+            };
+        };
+        return {
+            restrict: 'A',
+            require: '^form',
+            compile: function (elem, attrs) {
+                if (!elem.hasClass('form-group')) {
+                    throw 'show-errors element does not have the \'form-group\' class';
+                }
+                return linkFn;
+            }
+        };
+    }
+);
