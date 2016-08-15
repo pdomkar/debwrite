@@ -2,9 +2,9 @@
 
     <h2 ng-if="editPage">{{dictionary.dict_name}} - Edit entry</h2>
     <h2 ng-if="!editPage">{{dictionary.dict_name}} - Create new entry</h2>
-
+{{newEntry | json:4}}
     <form class="form-horizontal newEntry" name="newEntryForm" novalidate>
-        <div class="form-group" ng-repeat="(key,value) in dictionary.schema" ng-include="'container_renderer.html'" onload="parent=$parent.$parent">
+        <div class="form-group" ng-repeat="(key, container) in newEntry track by container.id" ng-include="'container_renderer.html'">
         </div>
         <div class="row">
             <div class="text-right">
@@ -16,64 +16,63 @@
     </form>
 
     <script type="text/ng-template" id="container_renderer.html">
-        <div class="row cont" ng-if="value.type == 'container'">
-            <label class="col-sm-1 control-label">{{value.label}}</label>
-            <div class="form-group col-sm-11 pull-right" ng-repeat="(key,value) in value.containers" ng-include="'container_renderer.html'">
+        <div class="row cont" ng-if="container.type == 'container'">
+            <label class="col-sm-1 control-label">{{container.label}}</label>
+            <div class="form-group col-sm-11 pull-right" ng-repeat="(key, container) in container.containers track by container.id" ng-include="'container_renderer.html'">
             </div>
         </div>
-        <div class="row" ng-if="value.type != 'container'">
+        <div class="row" ng-if="container.type != 'container'">
             <ng-form name="innerForm">
-                <label for="{{value.element}}" class="col-sm-2 control-label">
-                    <div ng-if="value.multiple == true" class="btn-group">
-                        <a class="btn btn-xs btn-info" ng-click="addContainerEntry(newEntry[value.element].value, value.type)"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                <label for="{{key}}" class="col-sm-2 control-label">
+                    <div ng-if="container.multiple == true" class="btn-group">
+                        <a class="btn btn-xs btn-info" ng-click="addContainerEntry(container)"><i class="fa fa-plus" aria-hidden="true"></i></a>
                     </div>
-                    {{value.label}}<span ng-if="value.required">*</span> :
+                    {{container.label}}<span ng-if="container.required">*</span> :
                 </label>
-                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="value.type == 'select'">
-                        <select ng-if="value.multiple != true" name="foo" ng-model="newEntry[value.element].value" id="{{value.element}}" class="form-control" ng-required="value.required">
-                            <option style="display:none" value="">Select {{value.label}} . . .</option>
-                            <option ng-repeat="option in value.options" value="{{option}}">{{option}}</option>
+                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="container.type == 'select'">
+                        <select ng-if="container.multiple != true" name="foo" ng-model="container.values" id="{{key}}" class="form-control" ng-required="container.required">
+                            <option style="display:none" value="">Select {{container.label}} . . .</option>
+                            <option ng-repeat="option in container.options" value="{{option}}">{{option}}</option>
                         </select>
-                        <select ng-if="value.multiple == true && newEntry[value.element].value.length <= 1" name="foo" ng-model="newEntry[value.element].value[0]" id="{{value.element}}" class="form-control" ng-required="value.required">
-                            <option style="display:none" value="">Select {{value.label}} . . .</option>
-                            <option ng-repeat="option in value.options" value="{{option}}">{{option}}</option>
+                        <select ng-if="container.multiple == true && container.values.length <= 1" name="foo" ng-model="container.values[0]" id="{{key}}" class="form-control" ng-required="container.required">
+                            <option style="display:none" value="">Select {{container.label}} . . .</option>
+                            <option ng-repeat="option in container.options" value="{{option}}">{{option}}</option>
                         </select>
-                        <div class="input-group" ng-if="value.multiple == true && newEntry[value.element].value.length > 1" ng-repeat="val in newEntry[value.element].value track by $index">
-                            <select name="foo" ng-model="newEntry[value.element].value[$index]" id="{{value.element}}" class="form-control" ng-required="value.required">
-                                <option style="display:none" value="">Select {{value.label}} . . .</option>
-                                <option ng-repeat="option in value.options" value="{{option}}">{{option}}</option>
+                        <div class="input-group" ng-if="container.multiple == true && container.values.length > 1" ng-repeat="val in container.values track by $index">
+                            <select name="foo" ng-model="container.values[$index]" id="{{key}}" class="form-control" ng-required="container.required">
+                                <option style="display:none" value="">Select {{container.label}} . . .</option>
+                                <option ng-repeat="option in container.options" value="{{option}}">{{option}}</option>
                             </select>
                             <span class="input-group-btn">
-                                <a class="btn btn-warning" ng-click="removeContainerEntry(newEntry[value.element].value, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                                <a class="btn btn-warning" ng-click="removeContainerEntry(container, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
                             </span>
                         </div>
                 </div>
-                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="value.type == 'textarea'">
-                        <textarea ng-if="value.multiple != true" rows="3" ng-model="newEntry[value.element].value" class="form-control" name="foo" id="{{value.element}}" ng-required="value.required"> </textarea>
-                        <textarea ng-if="value.multiple == true && newEntry[value.element].value.length <= 1" rows="3" ng-model="newEntry[value.element].value[0]" name="foo" class="form-control" id="{{value.element}}" ng-required="value.required"> </textarea>
-                        <div class="input-group" ng-if="value.multiple == true && newEntry[value.element].value.length > 1" ng-repeat="val in newEntry[value.element].value track by $index">
-                            <textarea rows="2" ng-model="newEntry[value.element].value[$index]" name="foo" class="form-control" id="{{value.element}}" ng-required="value.required"> </textarea>
+                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="container.type == 'textarea'">
+                        <textarea ng-if="container.multiple != true" rows="3" ng-model="container.values" class="form-control" name="foo" id="{{key}}" ng-required="container.required"> </textarea>
+                        <textarea ng-if="container.multiple == true && container.values.length <= 1" rows="3" ng-model="container.values[0]" name="foo" class="form-control" id="{{key}}" ng-required="container.required"> </textarea>
+                        <div class="input-group" ng-if="container.multiple == true && container.values.length > 1" ng-repeat="val in container.values track by $index">
+                            <textarea rows="2" ng-model="container.values[$index]" name="foo" class="form-control" id="{{key}}" ng-required="container.required"> </textarea>
                             <span class="input-group-btn">
-                                <a class="btn btn-warning" ng-click="removeContainerEntry(newEntry[value.element].value, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                                <a class="btn btn-warning" ng-click="removeContainerEntry(container, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
                             </span>
                         </div>
                 </div>
-                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="value.type != 'select' && value.type != 'textarea'">
-                    <input ng-if="value.multiple != true && value.type == 'file'" type="file" ng-file-model="newEntry[value.element].value" name="foo" class="form-control" id="{{value.element}}" ng-required="value.required">
-                    <input ng-if="value.multiple != true && value.type != 'file'" type="{{value.type}}" name="foo" ng-model="newEntry[value.element].value" class="form-control" id="{{value.element}}" ng-required="value.required">
-                    <input ng-if="value.multiple == true && (newEntry[value.element].value.length <= 1) && value.type == 'file'" type="{{value.type}}" name="foo" ng-file-model="newEntry[value.element].value[0]" class="form-control" id="{{value.element}}" ng-required="value.required">
-                    <input ng-if="value.multiple == true && (newEntry[value.element].value.length <= 1) && value.type != 'file'" type="{{value.type}}" name="foo" ng-model="newEntry[value.element].value[0]" class="form-control" id="{{value.element}}" ng-required="value.required">
-                    <div class="input-group" ng-if="value.multiple == true && newEntry[value.element].value.length > 1" ng-repeat="val in newEntry[value.element].value track by $index">
-                        <input ng-if="value.type == 'file'" type="{{value.type}}" ng-file-model="newEntry[value.element].value[$index]" name="foo" class="form-control" id="{{value.element}}" ng-required="value.required">
-                        <input ng-if="value.type != 'file'" type="{{value.type}}" ng-model="newEntry[value.element].value[$index]" name="foo" class="form-control" id="{{value.element}}" ng-required="value.required">
+                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="container.type != 'select' && container.type != 'textarea'">
+                    <input ng-if="container.multiple != true && container.type == 'file'" type="file" ng-file-model="container.values" name="foo" class="form-control" id="{{key}}" ng-required="container.required">
+                    <input ng-if="container.multiple != true && container.type != 'file'" type="{{container.type}}" name="foo" ng-model="container.values" class="form-control" id="{{key}}" ng-required="container.required">
+                    <input ng-if="container.multiple == true && (container.values.length <= 1) && container.type == 'file'" type="{{container.type}}" name="foo" ng-file-model="container.values[0]" class="form-control" id="{{key}}" ng-required="container.required">
+                    <input ng-if="container.multiple == true && (container.values.length <= 1) && container.type != 'file'" type="{{container.type}}" name="foo" ng-model="container.values[0]" class="form-control" id="{key}}" ng-required="container.required">
+                    <div class="input-group" ng-if="container.multiple == true && container.values.length > 1" ng-repeat="val in container.values track by $index">
+                        <input ng-if="container.type == 'file'" type="{{container.type}}" ng-file-model="container.values[$index]" name="foo" class="form-control" id="{{key}}" ng-required="container.required">
+                        <input ng-if="container.type != 'file'" type="{{container.type}}" ng-model="container.values[$index]" name="foo" class="form-control" id="{{key}}" ng-required="container.required">
                         <span class="input-group-btn">
-                            <a class="btn btn-warning" ng-click="removeContainerEntry(newEntry[value.element].value, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
+                            <a class="btn btn-warning" ng-click="removeContainerEntry(container, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
                         </span>
                     </div>
                 </div>
             </ng-form>
         </div>
-
     </script>
 
 </div>

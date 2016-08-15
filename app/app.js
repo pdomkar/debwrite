@@ -49,11 +49,6 @@ config(['$locationProvider', '$routeProvider', function($locationProvider, $rout
         showErrorsConfigProvider.showSuccess(true);
     }]).run(['$rootScope', '$timeout', '$routeParams', function($rootScope, $timeout, $routeParams) {
 
-        $rootScope.$watch('dictDetail', function(newVal, oldVal){
-
-                console.log(newVal);
-
-        }, true);
         $rootScope.alert = {text: '', type: 'success'};
         $rootScope.$watch('alert', function(newVal, oldVal){
             $timeout(function() {
