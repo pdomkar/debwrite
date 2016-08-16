@@ -8,10 +8,11 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
         $scope.editPage = false;
 
 
-        $scope.saveEntry = function() {
+        $scope.saveEntry = function () {
             $scope.$broadcast('show-errors-check-validity');
-            if ($scope.newEntryForm.$invalid) { return; }
-
+            if ($scope.newEntryForm.$invalid) {
+                return;
+            }
 
             if ($routeParams.id != null) {
                 $scope.entryId = $routeParams.id;
@@ -20,14 +21,14 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
             }
 
             $scope.fileEntries = [];
-            angular.forEach($scope.newEntry, function(value, key) {
-                if(value.type == "file") {
-                    if(value.values.length != undefined && value.values.length > 0) {
-                        angular.forEach(value.values, function(valueIn, keyIn) {
-                            $scope.fileEntries.push({"key": key+keyIn, "value": valueIn});
+            angular.forEach($scope.newEntry, function (value, key) {
+                if (value[0] != undefined && value[0].type == "file") {
+                    if (value[0].values.length != undefined && value[0].values.length > 0) {
+                        angular.forEach(value[0].values, function (valueIn, keyIn) {
+                            $scope.fileEntries.push({"key": key + keyIn, "value": valueIn});
                         });
                     } else {
-                        $scope.fileEntries.push({"key": key+"0", "value": value.values});
+                        $scope.fileEntries.push({"key": key + "0", "value": value[0].values});
                     }
                 }
             });
@@ -40,8 +41,8 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
          * Ulozi soubory a do filePaths ulozi vracenou cestu k souboru, po ulozeni vsech souboru zavola funkci generateEntryXMLRecursive
          * @param i index ukladaneho souboru
          */
-        $scope.saveFiles = function(i) {
-            if($scope.fileEntries[i] && $scope.fileEntries[i].value && $scope.fileEntries[i].value.data) {
+        $scope.saveFiles = function (i) {
+            if ($scope.fileEntries[i] && $scope.fileEntries[i].value && $scope.fileEntries[i].value.data) {
                 var fileData = $scope.fileEntries[i].value.data;
                 fileData = fileData.match(/data:([-\w]+\/[-\w\+\.]+)?;base64,(.*)/);
                 $http({
@@ -95,50 +96,53 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
          * @param values object s jednotlivými položkami pro generovani xml
          * @param submerged true pokud se jedna o volaní z rekurze
          */
-        $scope.generateEntryXMLRecursive = function(values, submerged) {
-            if(submerged == false) {
+        $scope.generateEntryXMLRecursive = function (values, submerged) {
+            if (submerged == false) {
                 $scope.iteratedItems = 0;
             }
-            angular.forEach(values, function(container, key) {
-                if(submerged == false) {
+            $scope.elemFile  = '';
+
+            angular.forEach(values, function (containerArray, key) {
+                if (submerged == false) {
                     $scope.iteratedItems++;
                 }
-                if(container.type != 'container') {
-                    if (container.multiple != true) {
-                        if(container.type == 'file') {
-                            if(container.values) { // kdyz odeslan file
-                                if($scope.filePaths[key+"0"] == undefined) {
-                                    $scope.filePaths[key+"0"] = '';
-                                }
-                                $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">' + $scope.filePaths[key+"0"] + '</' + key + '>';
-                            }
-                        } else {
-                            $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">' + container.values + '</' + key + '>';
-                        }
-                    } else {
-                        if(container.values != undefined && container.values.length > 0) {
+
+                //iterovani kvuli multiple containeru
+                angular.forEach(containerArray, function (container, indexIt) {
+                    if (container.type != 'container') {
+                        if (container.values != undefined && container.values.length > 0) {
                             angular.forEach(container.values, function (valueIn, keyIn) {
                                 if (container.type == 'file') {
-                                    if($scope.filePaths[key + keyIn] == undefined) {
+                                    if ($scope.filePaths[key + keyIn] == undefined) {
                                         $scope.filePaths[key + keyIn] = '';
                                     }
                                     $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">' + $scope.filePaths[key + keyIn] + '</' + key + '>';
+                                    if($scope.elemFile != key) { //pro vlozeni jen jednou (jiz vlozenych souboru
+                                        $scope.elemFile = key;
+                                        angular.forEach(container.fileValues, function (nameFile, keyIn) {
+                                            $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">' + nameFile + '</' + key + '>';
+                                        });
+                                    }
                                 } else {
-                                    $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">' + valueIn + '</' + key + '>';
+                                    if(container.type == 'textarea') {
+                                        var strVal = valueIn.replace(/\n/g, '-newLine-');
+                                    } else {
+                                        var strVal = valueIn;
+                                    }
+                                    $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">' + strVal + '</' + key + '>';
                                 }
-
                             });
                         } else {
                             $scope.entryXML += '<' + key + ' elem_type="' + container.type + '"></' + key + '>';
                         }
-                    }
-                } else {
-                    $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">';
+                    } else {
+                        $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">';
                         $scope.generateEntryXMLRecursive(container.containers, true);
-                    $scope.entryXML += '</' + key + '>';
-                }
+                        $scope.entryXML += '</' + key + '>';
+                    }
+                });
 
-                if($scope.iteratedItems == Object.keys(values).length && submerged == false) { // konec => dokončit xml a uložit zaznam---------------
+                if ($scope.iteratedItems == Object.keys(values).length && submerged == false) { // konec => dokončit xml a uložit zaznam---------------
                     $scope.entryXML += '</entry>';
                     console.log($scope.entryXML);
 
@@ -155,7 +159,7 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
                         then(function (response) {
                             if (response.data.status == 'OK') {
                                 console.log(response);
-                                if($routeParams.id == null) {
+                                if ($routeParams.id == null) {
                                     $rootScope.alert = {text: "Entry was added.", type: "success"};
                                 } else {
                                     $rootScope.alert = {text: "Entry was edited.", type: "success"};
@@ -166,7 +170,7 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
                             }
                         }, function (response) {
                             console.log(response);
-                            if($routeParams.id == null) {
+                            if ($routeParams.id == null) {
                                 $rootScope.alert = {text: "Failure while added entry.", type: "danger"};
                             } else {
                                 $rootScope.alert = {text: "Failure while edited entry.", type: "danger"};
@@ -177,125 +181,146 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
         };
 
 
-        $scope.generateNewEntryRecursive = function(values) {
-            angular.forEach(values, function(value, key) {
-                if(value.multiple == true) {
-                    if (value.type == 'number') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": [0]}, ';
-                    } else if (value.type == 'file') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": [{}]}, ';
-                    } else if (value.type == 'container') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {';
-                            $scope.generateNewEntryRecursive(value.containers);
-                            var lastChar = ($scope.newEntry).slice(-2);
-                            if (lastChar == ', ') {
-                                $scope.newEntry = ($scope.newEntry).slice(0, -2);
-                            }
-                        $scope.newEntry += '},"values": ""}, ';
-                    } else {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": [""]}, ';
+        $scope.generateNewEntryRecursive = function (values) {
+            angular.forEach(values, function (value, key) {
+                if (value.type == 'number') {
+                    $scope.newEntry += '"' + value.element + '": [{"id": ' + value.id + ', "label": "' + value.label + '", "headword": "' + value.headword + '", "multiple": ' + value.multiple + ', "required": ' + value.required + ', "type": "' + value.type + '", "options": ' + JSON.stringify(value.options) + ', "containers": {}, "values": [0]}], ';
+                } else if (value.type == 'file') {
+                    $scope.newEntry += '"' + value.element + '": [{"id": ' + value.id + ', "label": "' + value.label + '", "headword": "' + value.headword + '", "multiple": ' + value.multiple + ', "required": ' + value.required + ', "type": "' + value.type + '", "options": ' + JSON.stringify(value.options) + ', "containers": {}, "values": [{}]}], ';
+                } else if (value.type == 'container') {
+                    $scope.newEntry += '"' + value.element + '": [{"id": ' + value.id + ', "label": "' + value.label + '", "headword": "' + value.headword + '", "multiple": ' + value.multiple + ', "required": ' + value.required + ', "type": "' + value.type + '", "options": ' + JSON.stringify(value.options) + ', "containers": {';
+                    $scope.generateNewEntryRecursive(value.containers);
+                    var lastChar = ($scope.newEntry).slice(-2);
+                    if (lastChar == ', ') {
+                        $scope.newEntry = ($scope.newEntry).slice(0, -2);
                     }
+                    $scope.newEntry += '},"values": ""}], ';
                 } else {
-                    if (value.type == 'number') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": 0}, ';
-                    } else if (value.type == 'file') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": {}}, ';
-                    } else if (value.type == 'container') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {';
-                            $scope.generateNewEntryRecursive(value.containers);
-                            var lastChar = ($scope.newEntry).slice(-2);
-                            if (lastChar == ', ') {
-                                $scope.newEntry = ($scope.newEntry).slice(0, -2);
-                            }
-                        $scope.newEntry += '},"values": ""}, ';
-                    } else {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": ""}, ';
-                    }
+                    $scope.newEntry += '"' + value.element + '": [{"id": ' + value.id + ', "label": "' + value.label + '", "headword": "' + value.headword + '", "multiple": ' + value.multiple + ', "required": ' + value.required + ', "type": "' + value.type + '", "options": ' + JSON.stringify(value.options) + ', "containers": {}, "values": [""]}], ';
                 }
             });
         };
 
 
-        $scope.generateNewEntryEditRecursive = function(values, entry) {
-            angular.forEach(values, function(value, key) {
-                if(value.multiple == true) {
-                    if (value.type == 'number') {
-                            if(entry[value.element].length != undefined && entry[value.element].length != null && entry[value.element].length > 0) {
-                                var valStr = '';
-                                angular.forEach(entry[value.element], function (valueIn, keyIn) {
-                                    valStr += '' + valueIn.$ + ',';
-                                });
-                                var lastChar = (valStr).slice(-1);
-                                if (lastChar == ',') { valStr = (valStr).slice(0, -1); }
-                            } else {
-                                var valStr = entry[value.element].$;
-                            }
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": [' + valStr + ']}, ';
-                    } else if (value.type == 'file') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": [{}]}, ';
-                    } else if (value.type == 'container') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {';
-                        $scope.generateNewEntryEditRecursive(value.containers, entry[value.element]);
-                        var lastChar = ($scope.newEntry).slice(-2);
-                        if (lastChar == ', ') {
-                            $scope.newEntry = ($scope.newEntry).slice(0, -2);
-                        }
-                        $scope.newEntry += '},"values": ""}, ';
+        $scope.generateNewEntryEditRecursive = function (values, entry) {
+            delete entry["@id"];
+            delete entry["@elem_type"]
+            delete entry["meta"];
+
+            angular.forEach(values, function(container, key) {
+                if( container.type == "container" ) {
+                    if (Array.isArray(entry[container.element])) {
+                        $scope.newEntry += '"' + container.element + '": [';
+                        angular.forEach(entry[container.element], function (entryVal, key) {
+                            $scope.newEntry += '{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {';
+                            $scope.generateNewEntryEditRecursive(container.containers, entryVal);
+                            $scope.newEntry += '},"values": ""}, ';
+                        });
+                        $scope.newEntry += '], ';
                     } else {
-                            if(entry[value.element].length != undefined && entry[value.element].length != null && entry[value.element].length > 0) {
-                                var valStr = '';
-                                angular.forEach(entry[value.element], function (valueIn, keyIn) {
-                                    valStr += '"' + valueIn.$ + '",';
-                                });
-                                var lastChar = (valStr).slice(-1);
-                                if (lastChar == ',') { valStr = (valStr).slice(0, -1); }
-                            } else {
-                                var valStr = '"' + entry[value.element].$ + '"';
-                            }
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": [' + valStr + ']}, ';
+                        $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {';
+                        $scope.generateNewEntryEditRecursive(container.containers, entry[container.element]);
+                        $scope.newEntry += '},"values": ""}], ';
                     }
+                } else if( container.type == "number" ) {
+                        if(Array.isArray(entry[container.element])) {
+                            var valStr = '';
+                            angular.forEach(entry[container.element], function(entryVal, key) {
+                                valStr += entryVal.$ + ', ';
+                            });
+                            var lastChar = (valStr).slice(-2);
+                            if (lastChar == ', ') { valStr = (valStr).slice(0, -2); }
+                        } else {
+                            var valStr = entry[container.element].$;
+                        }
+                        $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "values": [' + valStr + ']}], ';
+                } else if( container.type == "file" ) {
+                        if(Array.isArray(entry[container.element])) {
+                            var valStr = '';
+                            angular.forEach(entry[container.element], function(entryVal, key) {
+                                if (entryVal.$ == undefined || entryVal.$ == "undefined") {
+                                    valStr += '';
+                                } else {
+                                    valStr += '"' + entryVal.$ + '", ';
+                                }
+                            });
+                            var lastChar = (valStr).slice(-2);
+                            if (lastChar == ', ') { valStr = (valStr).slice(0, -2); }
+                        } else {
+                            if(entry[container.element].$ == undefined || entry[container.element].$ == "undefined") {
+                                var valStr = '';
+                            } else {
+                                var valStr = '"' + entry[container.element].$ + '"';
+                            }
+                        }
+                        $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "values": [{}], "fileValues": [' + valStr + ']}], ';
                 } else {
-                    if (value.type == 'number') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": ' + entry[value.element].$ + '}, ';
-                    } else if (value.type == 'file') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": {}}, ';
-                    } else if (value.type == 'container') {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {';
-                        $scope.generateNewEntryEditRecursive(value.containers, entry[value.element]);
-                        var lastChar = ($scope.newEntry).slice(-2);
-                        if (lastChar == ', ') {
-                            $scope.newEntry = ($scope.newEntry).slice(0, -2);
+                        if(Array.isArray(entry[container.element])) {
+                            var valStr = '';
+                            angular.forEach(entry[container.element], function(entryVal, key) {
+                                if (entryVal.$ == undefined || entryVal.$ == "undefined") {
+                                    valStr += '"", ';
+                                } else {
+                                    valStr += '"' + entryVal.$ + '", ';
+                                }
+                            });
+                            var lastChar = (valStr).slice(-2);
+                            if (lastChar == ', ') { valStr = (valStr).slice(0, -2); }
+                        } else {
+                            if (entry[container.element].$ == undefined || entry[container.element].$ == "undefined") {
+                                var valStr = '""';
+                            } else {
+                                var valStr = '"' + entry[container.element].$ + '"';
+                            }
                         }
-                        $scope.newEntry += '},"values": ""}, ';
-                    } else {
-                        $scope.newEntry += '"' + value.element + '": {"id": '+ value.id +', "label": "'+ value.label +'", "headword": "'+ value.headword +'", "multiple": '+ value.multiple +', "required": '+ value.required +', "type": "'+ value.type +'", "options": '+ JSON.stringify(value.options) +', "containers": {}, "values": "' + entry[value.element].$ + '"}, ';
-                    }
+                        $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "values": [' + valStr + ']}], ';
                 }
             });
         };
 
 
-        $scope.addContainerEntry = function(value) {
-            if(value.type == 'file') {
-                value.values.push({});
-            } else if(value.type == 'number') {
-                value.values.push(0);
+        $scope.addContainerEntry = function (value) {
+            if ((value[0] != undefined) && (value[0].type = 'container')) {
+                var previousContainer = $.extend(true, {}, value[value.length - 1]); //vytvoření hluboke kopie
+                value.push(previousContainer);
             } else {
-                value.values.push("");
+                if (value.type == 'file') {
+                    value.values.push({});
+                } else if (value.type == 'number') {
+                    value.values.push(0);
+                } else {
+                    value.values.push("");
+                }
             }
         };
 
-        $scope.removeContainerEntry = function(value, index) {
+        $scope.removeContainerEntry = function (value, index) {
             if (index > -1) {
-                value.values.splice(index, 1);
+                value.splice(index, 1);
             }
+        };
+
+        $scope.removeFile = function (values, index) {
+            if (index > -1) {
+                values.splice(index, 1);
+            }
+        };
+
+        $scope.changeSelectOptionRecursive = function(values) {
+            angular.forEach(values, function (value, key) {
+                if(value.type == "container") {
+                    $scope.changeSelectOptionRecursive(value.containers);
+                } else if( value.type == "select") {
+                    values[key].options = (values[key].options).split(',');
+                }
+            });
         };
 
 
         $scope.init = function () {
             $rootScope.dictDetail = $routeParams.code;
 
-                //load dictionary info (of dictionary where is create new entry)
+            //load dictionary info (of dictionary where is create new entry)
             $http({
                 method: 'JSONP',
                 url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -309,9 +334,7 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
                     if (response.data.status == 'OK') {
                         $scope.dictionary = response.data;
                         $scope.dictionary.schema = JSON.parse(response.data.schema).containers;
-                        angular.forEach($scope.dictionary.schema, function (value, key) {
-                            $scope.dictionary.schema[key].options = ($scope.dictionary.schema[key].options).split(',');
-                        });
+                        $scope.changeSelectOptionRecursive($scope.dictionary.schema);
                         if ($routeParams.id == null) {
                             $scope.newEntry = '{';
                             $scope.generateNewEntryRecursive($scope.dictionary.schema);
@@ -323,8 +346,8 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
                             $scope.newEntry = JSON.parse($scope.newEntry);
                         }
 
-                             //load entry for edit
-                        if($routeParams.id != null) {
+                        //load entry for edit
+                        if ($routeParams.id != null) {
                             $scope.editPage = true;
 
                             $http({
@@ -346,9 +369,11 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
                                             $scope.newEntry = ($scope.newEntry).slice(0, -2);
                                         }
                                         $scope.newEntry += '}';
+                                        $scope.newEntry = ($scope.newEntry).replace(/], }/g, ']}'); // kvuli validite ( na konci přebytečná čarka
+                                        $scope.newEntry = ($scope.newEntry).replace(/}, ]/g, '}]'); // kvuli validite ( na konci přebytečná čarka
                                         console.log($scope.newEntry);
                                         $scope.newEntry = JSON.parse($scope.newEntry);
-
+                                        console.log($scope.newEntry);
                                     } else {
                                         $scope.showForm = false;
                                     }
@@ -357,16 +382,10 @@ angular.module('debwrite.newEntry', ["ng-file-model"])
                         } else {
                             $scope.editPage = false;
                         }
-
-
-
                     } else {
                     }
                 }, function (response) {
                 });
-
-
-
         };
 
     }]);

@@ -46,9 +46,9 @@ div.form-group button.btn {
   padding: 1rem;
 }
 
-.form-horizontal.newEntry .row.cont {
-  border: 1px solid black;
-}
+/*.form-horizontal.newEntry .row.cont {*/
+  /*border: 1px solid black;*/
+/*}*/
 
 .form-group .help-block {
   display: none;
