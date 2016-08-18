@@ -20,8 +20,6 @@
         $(document).ready(function() {
             var templateType = getURLParameter('template_type');
             if(templateType == 'xslt') {
-                console.log(unescapeSemicolon(localStorage.getItem('previewXSLTTemplate')));
-                console.log(JSON.parse(localStorage.getItem('previewEntry')));
             } else if(templateType == 'handlebar') {
                 var handlebarTemplate = unescapeSemicolon(localStorage.getItem('previewHandlebarTemplate'));
                 handlebarTemplate = handlebarTemplate.substring(handlebarTemplate.indexOf('<body>')+6, handlebarTemplate.indexOf('</body>'));

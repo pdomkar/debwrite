@@ -14,7 +14,7 @@
                             <select class="form-control" ng-options="template.code as template.name group by template.parent for template in templatesList" ng-model="previewTemplate">
                             </select>
                         </div>
-                        <button type="button" class="btn btn-info" ng-click="preparePreview()">Preview</button>
+                        <button type="button" class="btn btn-default" ng-click="preparePreview()">Preview</button>
                     </div>
                     <div class="text-right col-sm-4">
                         <button ng-if="!editPage" ng-click="saveEntry($event)" type="submit" class="btn btn-success">Create entry</button>
@@ -43,7 +43,7 @@
                 <div class="panel panel-default" ng-repeat="oneContainer in container track by $index">
                     <div class="panel-body">
                         <div ng-class="{'input-group' : oneContainer.multiple == true && container.length > 1}">
-                            <div class="form-group col-sm-11 pull-right" ng-repeat="(key, container) in oneContainer.containers track by $index" ng-include="'container_renderer.html'">
+                            <div class="form-group col-sm-11 l-1" ng-repeat="(key, container) in oneContainer.containers track by $index" ng-include="'container_renderer.html'">
                             </div>
                             <span class="input-group-btn" ng-if="oneContainer.multiple == true && container.length > 1">
                                 <a class="btn btn-warning" ng-click="removeContainerEntry(container, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
@@ -89,10 +89,16 @@
                         </span>
                     </div>
                     <div class="clear"></div>
-                    <div ng-if="oneContainer.fileValues != undefined">
-                        <h3>Actual files:</h3>
-                        <div class="row" ng-repeat="fileValue in oneContainer.fileValues track by $index">
-                            <img width="64" src="https://abulafia.fi.muni.cz:9050/files/{{dictionary.dict_code}}/{{fileValue}}">{{fileValue}} <a class="btn btn-danger" ng-click="removeFile(oneContainer.fileValues, $index)"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                    <div ng-if="oneContainer.fileValues != undefined && oneContainer.fileValues.length > 0">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Actual files</b>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row p-a-1" ng-repeat="fileValue in oneContainer.fileValues track by $index">
+                                    <img width="64" src="https://abulafia.fi.muni.cz:9050/files/{{dictionary.dict_code}}/{{fileValue}}">{{fileValue}} <a class="btn btn-danger" ng-click="removeFile(oneContainer.fileValues, $index)"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -57,6 +57,9 @@ div.form-group button.btn {
   margin-bottom: 0.4rem;
 }
 
+.l-1 {
+  left: 1rem;
+}
 .vtop {
   vertical-align: top !important;
 }

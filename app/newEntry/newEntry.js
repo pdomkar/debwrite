@@ -17,20 +17,28 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             }
             $rootScope.loading = true;
             $scope.fileEntries = [];
-            angular.forEach($scope.newEntry, function (value, key) {
-                if (value[0] != undefined && value[0].type == "file") {
-                    if (value[0].values.length != undefined && value[0].values.length > 0) {
-                        angular.forEach(value[0].values, function (valueIn, keyIn) {
-                            $scope.fileEntries.push({"key": key + keyIn, "value": valueIn});
-                        });
-                    } else {
-                        $scope.fileEntries.push({"key": key + "0", "value": value[0].values});
-                    }
-                }
-            });
+            $scope.setFileEntriesRecursive($scope.newEntry);
             $scope.entryXML = '<entry id="' + $scope.entryId + '">';
             $scope.filePaths = [];
             $scope.saveFiles(0); // nasledne dokončí xml string a uloží položku
+        };
+
+        $scope.setFileEntriesRecursive = function(values) {
+            angular.forEach(values, function (value, key) {
+                angular.forEach(value, function( valueIn, keyIn) {
+                    if (valueIn != undefined && valueIn.type == "file") {
+                        if (valueIn.values.length != undefined && valueIn.values.length > 0) {
+                            angular.forEach(value[0].values, function (valueInIn, keyInIn) {
+                                $scope.fileEntries.push({"key": key + keyInIn, "value": valueInIn});
+                            });
+                        } else {
+                            $scope.fileEntries.push({"key": key + "0", "value": valueIn.values});
+                        }
+                    } else if(valueIn != undefined && valueIn.type == "container") {
+                        $scope.setFileEntriesRecursive(valueIn.containers);
+                    }
+                });
+            });
         };
 
         /**
@@ -163,6 +171,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                                 $rootScope.alert = {text: response.data.text, type: "danger"};
                             }
                             $rootScope.loading = false;
+                            $location.path('/dictionaries/' + $routeParams.code);
                         }, function (response) {
                             if ($routeParams.id == null) {
                                 $rootScope.alert = {text: "Failure while added entry.", type: "danger"};
@@ -201,7 +210,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             delete entry["@id"];
             delete entry["@elem_type"];
             delete entry["meta"];
-
+console.log(entry);
             angular.forEach(values, function(container, key) {
                 if( container.type == "container" ) {
                     if (Array.isArray(entry[container.element])) {
@@ -330,7 +339,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                     $scope.previewUrl = "http://localhost:8000/preview.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
                 } else if (templateSelected.type == "handlebar") {
                     localStorage.setItem('previewHandlebarTemplate', templateSelected.template);
-                    localStorage.setItem('previewHandlebarEntry', JSON.stringify($scope.newEntry));
+                    localStorage.setItem('previewEntry', JSON.stringify($scope.newEntry));
                     $scope.previewUrl = "http://localhost:8000/preview.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
                 } else {
                     $scope.previewXML = '<entry id="' + $scope.entryId + '">\n';
