@@ -26,7 +26,6 @@
                     xslt: getURLParameter('template_code')
                 },
                 success: function (response) {
-                    console.log(response);
                     if(response.status == "OK") {
                         document.open();
                         document.write(response.result);
@@ -38,8 +37,6 @@
                 }
             });
         });
-
-
 
         function getURLParameter(sParam)
         {
@@ -55,11 +52,9 @@
             }
         }
 
-
     </script>
 </head>
     <body>
-
 
     </body>
 </html>

@@ -24,11 +24,9 @@ angular.module('debwrite.import', ['smart-table', 'ui.bootstrap', 'ngSanitize'])
             responseType: 'json'
         }).
             then(function (response) {
-                console.log(response);
                 $scope.srcLog = 'https://abulafia.fi.muni.cz:9050/admin?action=showlog&type=import&log=' + response.data.logfile;
                 $rootScope.loading = false;
             }, function (response) {
-                console.log(response);
                 $rootScope.loading = false;
             });
     };

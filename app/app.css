@@ -97,9 +97,6 @@ div.form-group button.btn {
   font-size: 2rem;
   margin-left: -1rem;
 }
-/*.form-horizontal.newEntry .row.cont {*/
-  /*border: 1px solid black;*/
-/*}*/
 
 .form-group .help-block {
   display: none;
@@ -108,6 +105,52 @@ div.form-group button.btn {
 .form-group.has-error .help-block {
   display: block;
 }
+
+.loading
+{
+  position: absolute;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100000;
+  width: 100%;
+  min-height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+#loader
+{
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 15rem;
+  height: 15rem;
+  border: 16px solid #EEEEEE; /* circle */
+  border-top: 16px solid #222222; /* animate part */
+  border-radius: 50%;
+  -webkit-animation: spin 2s linear infinite;
+  -ms-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin
+{
+  0%
+  { transform: rotate(0deg); }
+  100%
+  { transform: rotate(360deg); }
+}
+
+label.col-lg-1, label.col-lg-10, label.col-lg-11, label.col-lg-12, label.col-lg-2, label.col-lg-3, label.col-lg-4, label.col-lg-5, label.col-lg-6, label.col-lg-7, label.col-lg-8, label.col-lg-9, label.col-md-1, label.col-md-10, label.col-md-11, label.col-md-12, label.col-md-2, label.col-md-3, label.col-md-4, label.col-md-5, label.col-md-6, label.col-md-7, label.col-md-8, label.col-md-9, label.col-sm-1, label.col-sm-10, label.col-sm-11, label.col-sm-12, label.col-sm-2, label.col-sm-3, label.col-sm-4, label.col-sm-5, label.col-sm-6, label.col-sm-7, label.col-sm-8, label.col-sm-9, label.col-xs-1, label.col-xs-10, label.col-xs-11, label.col-xs-12, label.col-xs-2, label.col-xs-3, label.col-xs-4, label.col-xs-5, label.col-xs-6, label.col-xs-7, label.col-xs-8, label.col-xs-9
+{
+  padding-left: 0px !important;
+  margin-right: -22px !important;
+}
+
 
 /** tree ui drag and drop **/
 
@@ -180,45 +223,4 @@ tr.angular-ui-tree-empty {
 
 .col-sm-1, .col-xs-1, .col-md-1, .col-lg-1{
   width: auto !important;
-}
-
-
-.loading {
-  position:absolute;
-  display: block;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100000;
-  width: 100%;
-  min-height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  text-align: center;
-}
-
-#loader {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  z-index: 1;
-  width: 15rem;
-  height: 15rem;
-  border: 16px solid #eee; /* circle */
-  border-top: 16px solid #222; /* animate part */
-  border-radius: 50%;
-  -webkit-animation: spin 2s linear infinite;
-  -ms-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-
-label.col-lg-1, label.col-lg-10, label.col-lg-11, label.col-lg-12, label.col-lg-2, label.col-lg-3, label.col-lg-4, label.col-lg-5, label.col-lg-6, label.col-lg-7, label.col-lg-8, label.col-lg-9, label.col-md-1, label.col-md-10, label.col-md-11, label.col-md-12, label.col-md-2, label.col-md-3, label.col-md-4, label.col-md-5, label.col-md-6, label.col-md-7, label.col-md-8, label.col-md-9, label.col-sm-1, label.col-sm-10, label.col-sm-11, label.col-sm-12, label.col-sm-2, label.col-sm-3, label.col-sm-4, label.col-sm-5, label.col-sm-6, label.col-sm-7, label.col-sm-8, label.col-sm-9, label.col-xs-1, label.col-xs-10, label.col-xs-11, label.col-xs-12, label.col-xs-2, label.col-xs-3, label.col-xs-4, label.col-xs-5, label.col-xs-6, label.col-xs-7, label.col-xs-8, label.col-xs-9 {
-  padding-left: 0px !important;
-  margin-right: -22px !important;
 }

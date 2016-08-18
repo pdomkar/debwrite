@@ -114,7 +114,6 @@ angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
             then(function (response) {
                 if (response.data.status == 'OK') {
                     $scope.dictionary = response.data;
-                    console.log($scope.dictionary);
                 } else {
 
                 }

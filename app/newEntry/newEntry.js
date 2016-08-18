@@ -148,7 +148,6 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
 
                 if ($scope.iteratedItems == Object.keys(values).length && submerged == false) { // konec => dokončit xml a uložit zaznam---------------
                     $scope.entryXML += '</entry>';
-                    console.log($scope.entryXML);
 
                     $http({
                         method: 'JSONP',
@@ -210,7 +209,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             delete entry["@id"];
             delete entry["@elem_type"];
             delete entry["meta"];
-console.log(entry);
+
             angular.forEach(values, function(container, key) {
                 if( container.type == "container" ) {
                     if (Array.isArray(entry[container.element])) {
@@ -428,7 +427,6 @@ console.log(entry);
                         angular.forEach($scope.dictionary.htemplates, function(value, key) {
                             $scope.templatesList.push({"code": value.code, "name": value.name, "parent": "Handlebar templates", "type": "handlebar", "template": value.template});
                         });
-                        console.log($scope.dictionary);
                         $scope.dictionary.schema = JSON.parse(response.data.schema).containers;
                         $scope.changeSelectOptionRecursive($scope.dictionary.schema);
                         if ($routeParams.id == null) {
@@ -467,9 +465,7 @@ console.log(entry);
                                         $scope.newEntry += '}';
                                         $scope.newEntry = ($scope.newEntry).replace(/], }/g, ']}'); // kvuli validite ( na konci přebytečná čarka
                                         $scope.newEntry = ($scope.newEntry).replace(/}, ]/g, '}]'); // kvuli validite ( na konci přebytečná čarka
-                                        console.log($scope.newEntry);
                                         $scope.newEntry = JSON.parse($scope.newEntry);
-                                        console.log($scope.newEntry);
                                     } else {
                                         $scope.showForm = false;
                                     }

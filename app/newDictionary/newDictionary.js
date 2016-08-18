@@ -643,7 +643,6 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
         };
         $scope.changeHeadwordRecursive = function(values, id) {
             angular.forEach(values, function(value, key) {
-                console.log(value);
                 if(value.type == 'container') {
                     $scope.changeHeadwordRecursive(value.containers, id);
                 }
@@ -665,7 +664,6 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
             }).
                 then(function (response) {
                     if (response.data.status == 'OK') {
-                        console.log(response);
                         $scope.newDictionary.name = response.data.dict_name;
                         $scope.newDictionary.code = response.data.dict_code;
                         $scope.newDictionary.containers = JSON.parse(response.data.schema).containers;
