@@ -14,26 +14,13 @@
     <table st-table="entriesDisplayed" st-safe-src="entries" class="table table-striped">
         <thead>
         <tr>
-            <th st-sort="head">Entry</th>
-            <th st-sort="author">Author</th>
-            <th>Last edit</th>
-            <th>XSLT Preview</th>
-            <th>Handlebars Preview</th>
-            <th>XML</th>
-            <th class="text-right">Action</th>
-        </tr>
-        <tr>
-            <th>
-                <input st-search="head" placeholder="Search for entry . . ." class="input-sm form-control" type="search"/>
-            </th>
-            <th>
-                <input st-search="author" placeholder="Search for author . . ." class="input-sm form-control" type="search"/>
-            </th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th st-sort="head">Entry <input st-search="head" placeholder="Search for entry . . ." class="form-control"/></th>
+            <th st-sort="author">Author <input st-search="author" placeholder="Search for author . . ." class="form-control"/></th>
+            <th class="vtop">Last edit</th>
+            <th class="vtop">XSLT Preview</th>
+            <th class="vtop">Handlebars Preview</th>
+            <th class="vtop">XML</th>
+            <th class="text-right vtop">Action</th>
         </tr>
         </thead>
         <tbody>
