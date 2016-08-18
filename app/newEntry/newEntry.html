@@ -6,12 +6,25 @@
     <form class="form-horizontal newEntry" name="newEntryForm" novalidate>
         <div class="form-group" ng-repeat="(key, container) in newEntry track by $index" ng-include="'container_renderer.html'">
         </div>
-        <div class="row">
-            <div class="text-right">
-                <a ng-href="" class="btn btn-default">Preview</a>
+        <div class="row p-t-b-1">
+            <div class="col-sm-8">
+                <div class="col-sm-6">
+                    <select class="form-control" ng-options="template.code as template.name group by template.parent for template in templatesList" ng-model="previewTemplate">
+                    </select>
+                </div>
+                <button type="button" class="btn btn-info" ng-click="preparePreview()">Preview</button>
+            </div>
+            <div class="text-right col-sm-4">
                 <button ng-if="!editPage" ng-click="saveEntry($event)" type="submit" class="btn btn-success">Create entry</button>
                 <button ng-if="editPage" ng-click="saveEntry($event)" type="submit" class="btn btn-info">Edit entry</button>
             </div>
+        </div>
+
+        <div ng-if="previewUrl" class="row">
+            <h3>Preview</h3>
+            <iframe style="min-height: 50rem;" class="col-sm-12" id="iframePreview" ng-src="{{trustSrc(previewUrl)}}">
+
+            </iframe>
         </div>
     </form>
 

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="debwrite" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="debwrite" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="debwrite" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="debwrite" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Debwrite</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dist/font-awesome/css/font-awesome.min.css">
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.rawgit.com/google/code-prettify/master/loader/skins/sunburst.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var templateType = getURLParameter('template_type');
+            if(templateType == 'xslt') {
+                console.log(unescapeSemicolon(localStorage.getItem('previewXSLTTemplate')));
+                console.log(JSON.parse(localStorage.getItem('previewEntry')));
+            } else if(templateType == 'handlebar') {
+                var handlebarTemplate = unescapeSemicolon(localStorage.getItem('previewHandlebarTemplate'));
+                handlebarTemplate = handlebarTemplate.substring(handlebarTemplate.indexOf('<body>')+6, handlebarTemplate.indexOf('</body>'));
+                $('#preview-template').append(handlebarTemplate);
+                var source = $('#preview-template').html();
+                var template = Handlebars.compile(source);
+                var entry = {entry: {}};
+                setEntryRecursive(JSON.parse(localStorage.getItem('previewEntry')), entry);
+                $('#main').append(template(entry));
+            } else {
+                var xml = localStorage.getItem('previewXML');
+                $('#main').append('<pre class="prettyprint lang-xml" style="font-size: 16px; color: #aaa;">' + escapeHtml(xml) + '</pre>');
+            }
+        });
+
+        function setEntryRecursive(values, entry) {
+            $.each(values, function( index, value ) {
+                if(Array.isArray(value)) {
+                    var str = '';
+                    $.each(value, function( indexa, valueIn ) {
+                        if(valueIn.type == "container") {
+                            setEntryRecursive(valueIn.containers, entry);
+                        } else if(valueIn.type == "file") {
+                            if(valueIn.fileValues != undefined && valueIn.fileValues.length != undefined && valueIn.fileValues.length > 0) {
+                                str += (valueIn.fileValues).join(";") + ';';
+                            } else {
+                                str += '';
+                            }
+                        } else {
+                            if(valueIn.values != undefined && valueIn.values.length != undefined && valueIn.values.length > 0) {
+                                str += (valueIn.values).join(";") + ';';
+                            } else {
+                                str += '';
+                            }
+                        }
+                    });
+                    var lastChar = (str).slice(-1);
+                    if (lastChar == ';') { str = (str).slice(0, -1); }
+                    entry.entry[index] = str;
+                }
+            });
+        }
+
+        function getURLParameter(sParam)
+        {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam)
+                {
+                    return sParameterName[1];
+                }
+            }
+        }
+        function escapeSemicolon(text) {
+            return text
+                    .replace(/;/g, "[-semicolon-]");
+        }
+
+        function unescapeSemicolon(text) {
+            return text
+                    .replace(/\[-semicolon-\]/g, ";");
+        }
+
+        function escapeHtml(text) {
+            return text
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+        }
+    </script>
+</head>
+<body style="background: #111;">
+    <script id="preview-template" type="text/x-handlebars-template">
+    </script>
+    <div id="main">
+    </div>
+</body>
+</html>

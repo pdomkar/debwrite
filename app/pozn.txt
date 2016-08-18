@@ -2,3 +2,5 @@ kontrolovat unikatnost containeru
 
 Pokračovat v generovani formulaře pro new entry vyřešit newEntry[container] kdyz to je zanorene....?
 
+http://plnkr.co/edit/AI1z21?p=preview
+

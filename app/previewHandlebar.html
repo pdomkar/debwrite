@@ -83,6 +83,8 @@
                             }
                         }
                     });
+                    var lastChar = (str).slice(-1);
+                    if (lastChar == ';') { str = (str).slice(0, -1); }
                     entry.entry[index] = str;
                 } else {
                     if(value["@elem_type"] == "container") {

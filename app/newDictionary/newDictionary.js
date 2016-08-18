@@ -240,7 +240,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
         $scope.saveDictionary = function () {
             $scope.$broadcast('show-errors-check-validity');
             if ($scope.newDictionaryForm.$invalid) { return; }
-
+            $rootScope.loading = true;
             if ($routeParams.code != null) {
                 $scope.edit = '1';
             } else {
@@ -268,14 +268,16 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
                     }
+                    $rootScope.loading = false;
                     $location.path('/newDictionary/' + response.data.dict_code);
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while saving dictionary.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         };
 
         $scope.addUser = function(user) {
-
+            $rootScope.loading = true;
             user.login = (user.login).replace('<login>', '').replace('</login>', '');
             $http({
                 method: 'JSONP',
@@ -293,9 +295,11 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         $rootScope.alert = {text: "User was added.", type: "success"};
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
+                        $rootScope.loading = false;
                     }
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while added user.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         };
 
@@ -308,6 +312,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 .ok('Remove')
                 .cancel('Cancel');
             $mdDialog.show(confirm).then(function() {
+                $rootScope.loading = true;
                 $http({
                     method: 'JSONP',
                     url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -324,9 +329,11 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                             $scope.loadDictInfo();
                         } else {
                             $rootScope.alert = {text: response.data.text, type: "danger"};
+                            $rootScope.loading = false;
                         }
                     }, function (response) {
                         $rootScope.alert = {text: "Failure while remove user.", type: "danger"};
+                        $rootScope.loading = false;
                     });
             }, function() {
                 //canceled
@@ -334,6 +341,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
         };
 
         $scope.savePermission = function(user) {
+            $rootScope.loading = true;
             $http({
                 method: 'JSONP',
                 url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -347,20 +355,24 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
             }).
                 then(function (response) {
                     if (response.data.status == 'OK') {
+                        $rootScope.loading = false;
                         $location.path('/newDictionary/' + $scope.newDictionary.code);
                         $rootScope.alert = {text: "Permission was changed.", type: "success"};
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
+                        $rootScope.loading = false;
                     }
+
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while saving dictionary.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         };
 
         $scope.addXSLTTemplate = function(xsltForm) {
             $scope.$broadcast('show-errors-check-validity');
             if (xsltForm.$invalid) { return; }
-
+            $rootScope.loading = true;
             $http({
                 method: 'JSONP',
                 url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -380,16 +392,18 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         $scope.addedXSLTTemplate = {name: '', code: '', template: ''};
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
+                        $rootScope.loading = false;
                     }
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while added XSLT template.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         };
 
         $scope.editXSLTTemplate = function(template, xsltForm) {
             $scope.$broadcast('show-errors-check-validity');
             if (xsltForm.$invalid) { return; }
-
+            $rootScope.loading = true;
             $http({
                 method: 'JSONP',
                 url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -408,9 +422,11 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         $rootScope.alert = {text: "XSLT template was edited.", type: "success"};
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
+                        $rootScope.loading = false;
                     }
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while edited XSLT template.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         };
 
@@ -452,6 +468,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 .ok('Remove')
                 .cancel('Cancel');
             $mdDialog.show(confirm).then(function() {
+                $rootScope.loading = true;
                 $http({
                     method: 'JSONP',
                     url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -468,9 +485,11 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                             $scope.loadDictInfo();
                         } else {
                             $rootScope.alert = {text: response.data.text, type: "danger"};
+                            $rootScope.loading = false;
                         }
                     }, function (response) {
                         $rootScope.alert = {text: "Failure while remove XSLT template.", type: "danger"};
+                        $rootScope.loading = false;
                     });
             }, function() {
                 //canceled
@@ -490,7 +509,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
         $scope.addHandlebar = function(handlebarForm) {
             $scope.$broadcast('show-errors-check-validity');
             if (handlebarForm.$invalid) { return; }
-
+            $rootScope.loading = true;
             $http({
                 method: 'JSONP',
                 url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -510,16 +529,18 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         $scope.addedHtmlTemplate = {name: '', code: '', template: ''};
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
+                        $rootScope.loading = false;
                     }
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while added handlebar template.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         };
 
         $scope.editHandlebar = function(handlebar, handlebarForm) {
             $scope.$broadcast('show-errors-check-validity');
             if (handlebarForm.$invalid) { return; }
-
+            $rootScope.loading = true;
             $http({
                 method: 'JSONP',
                 url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -538,9 +559,11 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         $rootScope.alert = {text: "Handlebar template was edited.", type: "success"};
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
+                        $rootScope.loading = false;
                     }
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while edited handlebar template.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         };
 
@@ -586,6 +609,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 .ok('Remove')
                 .cancel('Cancel');
             $mdDialog.show(confirm).then(function() {
+                $rootScope.loading = true;
                 $http({
                     method: 'JSONP',
                     url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -602,9 +626,11 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                             $scope.loadDictInfo();
                         } else {
                             $rootScope.alert = {text: response.data.text, type: "danger"};
+                            $rootScope.loading = false;
                         }
                     }, function (response) {
                         $rootScope.alert = {text: "Failure while remove handlebar template.", type: "danger"};
+                        $rootScope.loading = false;
                     });
             }, function() {
                 //canceled
@@ -662,68 +688,53 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         $scope.showForm = false;
                         $rootScope.alert = {text: response.data.text, type: "danger"};
                     }
+
+                        //load users
+                    $http({
+                        method: 'JSONP',
+                        url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
+                        params: {action: 'user_all'},
+                        responseType: 'json'
+                    }).
+                        then(function (response) {
+                            if (response.data.status == 'OK') {
+                                $scope.users = response.data.users;
+                            }
+                            $rootScope.loading = false;
+                        }, function (response) {
+                            $rootScope.loading = false;
+                        });
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while removing dictionary.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         };
 
-
-
-
-
-
-
         $scope.init = function () {
+            $rootScope.loading = true;
             $rootScope.dictDetail = $routeParams.code;
             if ($routeParams.code != null) {
                 $scope.editPage = true;
-
                 $scope.loadDictInfo();
-
-                     //load users
-                $http({
-                    method: 'JSONP',
-                    url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
-                    params: {action: 'user_all'},
-                    responseType: 'json'
-                }).
-                then(function (response) {
-                    if (response.data.status == 'OK') {
-                        $scope.users = response.data.users;
-                    } else {
-                    }
-                }, function (response) {
-                });
-
             } else {
                 $scope.editPage = false;
+                $rootScope.loading = false;
             }
         };
 
     }]).directive("uniqueNameDict", function(){
-        // requires an isloated model
         return {
-            // restrict to an attribute type.
             restrict: 'A',
-            // element must have ng-model attribute.
             require: 'ngModel',
             link: function(scope, ele, attrs, ctrl){
-
-                // add a parser that will process each time the value is
-                // parsed into the model when the user updates it.
+                // add a parser that will process each time the value is parsed into the model when the user updates it.
                 ctrl.$parsers.unshift(function(value) {
                     if(value){
-
                         var keyProperty = scope.$eval(attrs.uniqueNameDict);
-                        console.log(keyProperty);
-
-
                         var valid = false;
                         ctrl.$setValidity('invalidUniqueNameDict', valid);
                     }
-
-                    // if it's valid, return the value to the model,
-                    // otherwise return undefined.
+                    // if it's valid, return the value to the model, otherwise return undefined.
                     return valid ? value : undefined;
                 });
 

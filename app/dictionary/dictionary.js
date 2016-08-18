@@ -18,6 +18,7 @@ angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
             .ok('Remove')
             .cancel('Cancel');
         $mdDialog.show(confirm).then(function() {
+            $rootScope.loading = true;
             $http({
                 method: 'JSONP',
                 url: 'https://abulafia.fi.muni.cz:9050/'+ $routeParams.code + '?callback=JSON_CALLBACK',
@@ -34,8 +35,10 @@ angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
                     }
+                    $rootScope.loading = false;
                 }, function (response) {
                     $rootScope.alert = {text: "Failure while remove entry.", type: "danger"};
+                    $rootScope.loading = false;
                 });
         }, function() {
             //canceled
@@ -91,12 +94,15 @@ angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
                 } else {
 
                 }
+                $rootScope.loading = false;
             }, function (response) {
+                $rootScope.loading = false;
             });
     };
 
 
     $scope.init = function() {
+        $rootScope.loading = true;
         $rootScope.dictDetail = $routeParams.code;
         //load dict info
         $http({

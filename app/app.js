@@ -137,18 +137,35 @@ config(['$locationProvider', '$routeProvider', function($locationProvider, $rout
         };
     }
 ).directive('changeNewLines', function() {
-        return {
-            require: 'ngModel',
-            link: function(scope, element, attrs, ngModelController) {
-                ngModelController.$parsers.push(function(data) {
-                    //convert data from view format to model format
-                    return data.replace(/\n/g, '-newLine-');
-                });
+    return {
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModelController) {
+            ngModelController.$parsers.push(function(data) {
+                //convert data from view format to model format
+                return data.replace(/\n/g, '-newLine-');
+            });
 
-                ngModelController.$formatters.push(function(data) {
-                    //convert data from model format to view format
-                    return data.replace(/-newLine-/g, '\n');
-                });
-            }
+            ngModelController.$formatters.push(function(data) {
+                //convert data from model format to view format
+                return data.replace(/-newLine-/g, '\n');
+            });
         }
-    });
+    }
+}).directive('loading', function () {
+    return {
+        restrict: 'E',
+        replace: true,
+        template: '<div class="loading"><div id="loader"></div></div>',
+        link: function (scope, element, attr) {
+            scope.$watch('loading', function (val) {
+                if (val) {
+                    $(element).show();
+                    $(element).height(10000);
+                } else {
+                    $(element).hide();
+
+                }
+            });
+        }
+    }
+});

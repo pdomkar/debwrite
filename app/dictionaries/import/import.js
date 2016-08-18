@@ -8,10 +8,9 @@ angular.module('debwrite.import', ['smart-table', 'ui.bootstrap', 'ngSanitize'])
     $scope.srcLog = '';
 
     $scope.importData = function() {
-        console.log($scope.import.file.data);
+        $rootScope.loading = true;
         var fileData = $scope.import.file.data;
         fileData = fileData.match(/data:([-\w]+\/[-\w\+\.]+)?;base64,(.*)/);
-        console.log($scope.import.delCurrent);
         $http({
             method: 'JSONP',
             url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -27,8 +26,10 @@ angular.module('debwrite.import', ['smart-table', 'ui.bootstrap', 'ngSanitize'])
             then(function (response) {
                 console.log(response);
                 $scope.srcLog = 'https://abulafia.fi.muni.cz:9050/admin?action=showlog&type=import&log=' + response.data.logfile;
+                $rootScope.loading = false;
             }, function (response) {
                 console.log(response);
+                $rootScope.loading = false;
             });
     };
 
@@ -37,6 +38,7 @@ angular.module('debwrite.import', ['smart-table', 'ui.bootstrap', 'ngSanitize'])
     };
 
     $scope.init = function() {
+        $rootScope.loading = true;
         $rootScope.dictDetail = $routeParams.code;
 
         //load dict info
@@ -51,7 +53,9 @@ angular.module('debwrite.import', ['smart-table', 'ui.bootstrap', 'ngSanitize'])
                     $scope.dictionary = response.data;
                 } else {
                 }
+                $rootScope.loading = false;
             }, function (response) {
+                $rootScope.loading = false;
             });
     };
 

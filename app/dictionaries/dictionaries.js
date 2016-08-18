@@ -18,8 +18,10 @@ angular.module('debwrite.dictionaries', ['smart-table', 'ui.bootstrap'])
         }).
             then(function (response) {
                 $scope.dictionaries = response.data;
+                $rootScope.loading = false;
             }, function (response) {
                 $scope.dictionaries = response.data || "Request failed";
+                $rootScope.loading = false;
             });
     };
 
@@ -32,6 +34,7 @@ angular.module('debwrite.dictionaries', ['smart-table', 'ui.bootstrap'])
             .ok('Remove')
             .cancel('Cancel');
         $mdDialog.show(confirm).then(function() {
+            $rootScope.loading = true;
             $http({
                 method: 'JSONP',
                 url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
@@ -45,7 +48,9 @@ angular.module('debwrite.dictionaries', ['smart-table', 'ui.bootstrap'])
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
                     }
+                    $rootScope.loading = false;
                 }, function(response) {
+                    $rootScope.loading = false;
                     $rootScope.alert = {text: "Failure while removing dictionary.", type: "danger"};
                 });
         }, function() {
@@ -54,6 +59,7 @@ angular.module('debwrite.dictionaries', ['smart-table', 'ui.bootstrap'])
     };
 
     $scope.init = function() {
+        $rootScope.loading = true;
         $rootScope.dictDetail = $routeParams.code;
         $scope.loadDictionaries();
     };
