@@ -64,6 +64,39 @@ div.form-group button.btn {
   vertical-align: top !important;
 }
 
+.remove-container-button {
+   display: block;
+   position: absolute;
+   top: 0;
+   right: 0;
+   bottom: 0;
+   font-size: 14px;
+   font-weight: 400;
+   width: 4rem;
+   line-height: 1.42857143;
+   text-align: center;
+   white-space: nowrap;
+   vertical-align: middle;
+   cursor: pointer;
+   border: 1px solid #eea236;
+   border-radius: 0px 4px 4px 0px;
+   color: #fff;
+   background-color: #f0ad4e;
+ }
+
+.remove-container-button:hover {
+  background-color: #eea236;
+}
+
+.remove-container-button-icon {
+  position: absolute;
+  top: 50%;
+  bottom: 50%;
+}
+.remove-container-button-icon.fa-minus:before {
+  font-size: 2rem;
+  margin-left: -1rem;
+}
 /*.form-horizontal.newEntry .row.cont {*/
   /*border: 1px solid black;*/
 /*}*/
