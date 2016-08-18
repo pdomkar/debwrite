@@ -18,6 +18,7 @@
     "angular-selectize2": "3.0.1",
     "ng-file-model": "",
     "angular-bootstrap-show-errors": "2.3.0",
-    "angular-material": "1.1.0-rc.5-master-9082e4a"
+    "angular-material": "1.1.0-rc.5-master-9082e4a",
+    "angular-sanitize": "1.5.9-build.4996+sha.e50e91c"
   }
 }
