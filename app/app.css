@@ -224,3 +224,18 @@ tr.angular-ui-tree-empty {
 .col-sm-1, .col-xs-1, .col-md-1, .col-lg-1{
   width: auto !important;
 }
+
+.st-sort-descent:before
+{
+  content: '\25BC' !important;
+}
+
+.st-sort-ascent:before
+{
+  content: '\25B2' !important;
+}
+
+th[st-sort]
+{
+  cursor: pointer;
+}

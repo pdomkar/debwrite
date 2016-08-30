@@ -98,7 +98,7 @@
                     </script>
 
                     <button type="button" ng-click="addContainer()" class="btn btn-primary">
-                        Add container
+                        Add element
                     </button>
 
                     <div class="clearfix"></div>
@@ -171,11 +171,13 @@
                             <td>{{user.name}}</td>
                             <td>{{user.email}}</td>
                             <td>
-                                <select ng-model="user.perm" ng-change="savePermission(user)" class="form-control">
+                                <select ng-if="user.login != dictionaryOwner" ng-model="user.perm"
+                                        ng-change="savePermission(user)" class="form-control">
                                     <option value="r">Read only</option>
                                     <option value="e">Editor</option>
                                     <option value="m">Manager</option>
                                 </select>
+                                <span ng-if="user.login == dictionaryOwner">Manager</span>
                             </td>
                             <td class="text-right">
                                 <button type="button" ng-if="user.login != dictionaryOwner" ng-click="removeUser($event, user.login)" class="btn  btn-xs btn-danger" uib-tooltip="Remove user">

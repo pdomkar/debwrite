@@ -285,7 +285,8 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 params: {
                     action: 'user_add',
                     code: $scope.newDictionary.code,
-                    login: user.login
+                    login: user.login,
+                    perm: user.perm
                 },
                 responseType: 'json'
             }).

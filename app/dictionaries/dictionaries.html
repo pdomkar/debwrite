@@ -8,21 +8,26 @@
 
     <div class="panel panel-default" ng-show="dictionaries.dict_r.length > 0">
         <div class="panel-heading">
-            <h3>Dictionaries for read</h3>
+            <h4>Dictionaries for read</h4>
         </div>
         <table st-table="dictionariesRDisplayed" st-safe-src="dictionaries.dict_r" class="table table-striped">
             <thead>
                 <tr>
-                    <th st-sort="name">Name <input st-search="name" placeholder="Search for name . . ." class="form-control"/></th>
-                    <th st-sort="code">Code <input st-search="code" placeholder="Search for code . . ." class="form-control"/></th>
+                    <th st-sort="name">Name</th>
+                    <th st-sort="code">Code</th>
                     <th class="text-right vtop">Action</th>
                 </tr>
+                <tr>
+                    <td><input st-search="name" placeholder="Search for name . . ." class="form-control"/></td>
+                    <td><input st-search="code" placeholder="Search for code . . ." class="form-control"/></td>
+                    <td></td>
+                </tr>
             </thead>
-            <tbody>
+            <tbody data-link="row" class="rowlink">
                 <tr ng-repeat="dictionary in dictionariesRDisplayed">
-                    <td>{{dictionary.name}}</td>
+                    <td><a ng-href="#/dictionaries/{{dictionary.code}}"><strong>{{dictionary.name}}</strong></a></td>
                     <td>{{dictionary.code}}</td>
-                    <td class="text-right">
+                    <td class="text-right rowlink-skip">
                         <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default" uib-tooltip="Browse dictionary">
                             <i class="fa fa-search" aria-hidden="true"></i>
                         </a>
@@ -44,21 +49,26 @@
 
     <div class="panel panel-default" ng-show="dictionaries.dict_w.length > 0">
         <div class="panel-heading">
-            <h3>Dictionaries for write</h3>
+            <h4>Dictionaries for write</h4>
         </div>
         <table st-table="dictionariesWDisplayed" st-safe-src="dictionaries.dict_w" class="table table-striped">
             <thead>
                 <tr>
-                    <th st-sort="name">Name <input st-search="name" placeholder="Search for name . . ." class="form-control"/></th>
-                    <th st-sort="code">Code <input st-search="code" placeholder="Search for code . . ." class="form-control"/></th>
+                    <th st-sort="name">Name</th>
+                    <th st-sort="code">Code</th>
                     <th class="text-right vtop">Action</th>
                 </tr>
+                <tr>
+                    <td><input st-search="name" placeholder="Search for name . . ." class="form-control"/></td>
+                    <td><input st-search="code" placeholder="Search for code . . ." class="form-control"/></td>
+                    <td></td>
+                </tr>
             </thead>
-            <tbody>
+            <tbody data-link="row" class="rowlink">
             <tr ng-repeat="dictionary in dictionariesWDisplayed">
-                <td>{{dictionary.name}}</td>
+                <td><a ng-href="#/dictionaries/{{dictionary.code}}"><strong>{{dictionary.name}}</strong></a></td>
                 <td>{{dictionary.code}}</td>
-                <td class="text-right">
+                <td class="text-right rowlink-skip">
                     <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default" uib-tooltip="Browse dictionary">
                         <i class="fa fa-search" aria-hidden="true"></i>
                     </a>
@@ -80,21 +90,26 @@
 
     <div class="panel panel-default" ng-show="dictionaries.dict_m.length > 0">
         <div class="panel-heading">
-            <h3>My dictionaries</h3>
+            <h4>My dictionaries</h4>
         </div>
         <table st-table="dictionariesMDisplayed" st-safe-src="dictionaries.dict_m" class="table table-striped">
             <thead>
                 <tr>
-                    <th st-sort="name">Name <input st-search="name" placeholder="Search for name . . ." class="form-control"/></th>
-                    <th st-sort="code">Code <input st-search="code" placeholder="Search for code . . ." class="form-control"/></th>
+                    <th st-sort="name">Name</th>
+                    <th st-sort="code">Code</th>
                     <th class="text-right vtop">Action</th>
                 </tr>
+                <tr>
+                    <td><input st-search="name" placeholder="Search for name . . ." class="form-control"/></td>
+                    <td><input st-search="code" placeholder="Search for code . . ." class="form-control"/></td>
+                    <td></td>
+                </tr>
             </thead>
-            <tbody>
+            <tbody data-link="row" class="rowlink">
                 <tr ng-repeat="dictionary in dictionariesMDisplayed">
-                    <td>{{dictionary.name}}</td>
+                    <td><a ng-href="#/dictionaries/{{dictionary.code}}"><strong>{{dictionary.name}}</strong></a></td>
                     <td>{{dictionary.code}}</td>
-                    <td class="text-right">
+                    <td class="text-right rowlink-skip">
                         <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default" uib-tooltip="Browse dictionary">
                             <i class="fa fa-search" aria-hidden="true"></i>
                         </a>
@@ -125,21 +140,26 @@
 
     <div class="panel panel-default" ng-show="dictionaries.dict_a.length > 0">
         <div class="panel-heading">
-            <h3>Dictionaries</h3>
+            <h4>Dictionaries</h4>
         </div>
         <table st-table="dictionariesADisplayed" st-safe-src="dictionaries.dict_a" class="table table-striped">
             <thead>
-                <tr>
-                    <th st-sort="name">Name <input st-search="name" placeholder="Search for name . . ." class="form-control"/></th>
-                    <th st-sort="code">Code <input st-search="code" placeholder="Search for code . . ." class="form-control"/></th>
-                    <th class="text-right vtop">Action</th>
-                </tr>
+            <tr>
+                <th st-sort="name">Name</th>
+                <th st-sort="code">Code</th>
+                <th class="text-right vtop">Action</th>
+            </tr>
+            <tr>
+                <td><input st-search="name" placeholder="Search for name . . ." class="form-control"/></td>
+                <td><input st-search="code" placeholder="Search for code . . ." class="form-control"/></td>
+                <td></td>
+            </tr>
             </thead>
-            <tbody>
+            <tbody data-link="row" class="rowlink">
             <tr ng-repeat="dictionary in dictionariesADisplayed">
-                <td>{{dictionary.name}}</td>
+                <td><a ng-href="#/dictionaries/{{dictionary.code}}"><strong>{{dictionary.name}}</strong></a></td>
                 <td>{{dictionary.code}}</td>
-                <td class="text-right">
+                <td class="text-right rowlink-skip">
                     <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default" uib-tooltip="Browse dictionary">
                         <i class="fa fa-search" aria-hidden="true"></i>
                     </a>
