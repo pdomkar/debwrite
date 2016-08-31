@@ -81,9 +81,10 @@
                                 <div ng-show="container.type=='select'" ng-class="{ 'has-error': innerForm.options.$error.required }" class="col-sm-2" data-nodrag>
                                     <input type="text" ng-model="container.options" name="options" class="form-control" id="options" ng-required="container.type == 'select'" placeholder="Separate by comma ','">
                                 </div>
-                                <button type="button" data-nodrag ng-click="removeContainer(newDictionary.containers, container.id)" class="btn btn-danger pull-right">
+                                <a data-nodrag ng-click="removeContainer(newDictionary.containers, container.id)"
+                                   class="btn btn-danger pull-right" title="Remove element">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
-                                </button>
+                                </a>
                             </ng-form>
                         </div>
                         <ol ng-if="container.type!='container'" ui-tree-nodes="" data-nodrop-enabled="true" ng-model="container.containers" ng-class="{hidden: collapsed}">
@@ -143,7 +144,7 @@
                                 <div class="col-sm-2">
                                     <select ng-model="addedUser.perm" id="permission" class="form-control" style="width:100%;" required>
                                         <option value="r" ng-selected="true">Read only</option>
-                                        <option value="e">Editor</option>
+                                        <option value="w">Editor</option>
                                         <option value="m">Manager</option>
                                     </select>
                                 </div>
@@ -158,11 +159,21 @@
                     <table st-table="dictionaryUsersDisplayed" st-safe-src="dictionaryUsers" class="table table-striped p-a-1">
                         <thead>
                             <tr>
-                                <th st-sort="login">Login <input st-search="login" placeholder="Search for login . . ." class="form-control"/></th>
-                                <th st-sort="name">Name <input st-search="name" placeholder="Search for name . . ." class="form-control"/></th>
-                                <th st-sort="email">Email <input st-search="email" placeholder="Search for email . . ." class="input-sm form-control"/></th>
+                                <th st-sort="login">Login</th>
+                                <th st-sort="name">Name</th>
+                                <th st-sort="email">Email</th>
                                 <th class="vtop">Permission</th>
                                 <th class="text-right vtop">Action</th>
+                            </tr>
+                            <tr>
+                                <td><input st-search="login" placeholder="Search for login . . ." class="form-control"/>
+                                </td>
+                                <td><input st-search="name" placeholder="Search for name . . ." class="form-control"/>
+                                </td>
+                                <td><input st-search="email" placeholder="Search for email . . ."
+                                           class="input-sm form-control"/></td>
+                                <td></td>
+                                <td></td>
                             </tr>
                         </thead>
                         <tbody>
@@ -174,15 +185,16 @@
                                 <select ng-if="user.login != dictionaryOwner" ng-model="user.perm"
                                         ng-change="savePermission(user)" class="form-control">
                                     <option value="r">Read only</option>
-                                    <option value="e">Editor</option>
+                                    <option value="w">Editor</option>
                                     <option value="m">Manager</option>
                                 </select>
                                 <span ng-if="user.login == dictionaryOwner">Manager</span>
                             </td>
                             <td class="text-right">
-                                <button type="button" ng-if="user.login != dictionaryOwner" ng-click="removeUser($event, user.login)" class="btn  btn-xs btn-danger" uib-tooltip="Remove user">
+                                <a ng-if="user.login != dictionaryOwner" ng-click="removeUser($event, user.login)"
+                                   class="btn  btn-xs btn-danger" data-title="Remove user">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
-                                </button>
+                                </a>
                             </td>
                         </tr>
                         </tbody>
@@ -231,13 +243,23 @@
                                         <p class="help-block" ng-if="xsltForm.template.$error.required">The template of xslt template is required</p>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" data-nodrag>Default template for
+                                        dictionary</label>
+
+                                    <div class="col-sm-1" data-nodrag>
+                                        <input type="checkbox" ng-model="addedXSLTTemplate.default">
+                                    </div>
+                                </div>
                                 <div class="form-group text-right">
-                                    <button type="button" ng-click="generateXSLTTemplate(addedXSLTTemplate)" class="btn  btn-info" uib-tooltip="Generate from setting">
+                                    <a ng-click="generateXSLTTemplate(addedXSLTTemplate)" class="btn  btn-info"
+                                       data-title="Generate from setting">
                                         <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
-                                    </button>
-                                    <button type="button" ng-click="addXSLTTemplate(xsltForm)" class="btn btn-success" uib-tooltip="Create XSLT template">
+                                    </a>
+                                    <a ng-click="addXSLTTemplate(xsltForm)" class="btn btn-success"
+                                       data-title="Create XSLT template">
                                         <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create
-                                    </button>
+                                    </a>
                                 </div>
                             </form>
                         </div>
@@ -269,16 +291,27 @@
                                             <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.template.$error.required">The template of xslt template is required</p>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label" data-nodrag>Default template for
+                                            dictionary</label>
+
+                                        <div class="col-sm-1" data-nodrag>
+                                            <input type="checkbox" ng-model="xsltTemplate.default">
+                                        </div>
+                                    </div>
                                     <div class="form-group text-right">
-                                        <button type="button" ng-click="generateXSLTTemplate(xsltTemplate)" class="btn btn-info" uib-tooltip="Generate from setting">
+                                        <a ng-click="generateXSLTTemplate(xsltTemplate)" class="btn btn-info"
+                                           data-title="Generate from setting">
                                             <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
-                                        </button>
-                                        <button type="button" ng-click="editXSLTTemplate(xsltTemplate, xsltForm)" class="btn btn-success" uib-tooltip="Save XSLT template">
+                                        </a>
+                                        <a ng-click="editXSLTTemplate(xsltTemplate, xsltForm)" class="btn btn-success"
+                                           data-title="Save XSLT template">
                                             <i class="fa fa-save" aria-hidden="true"></i>&nbsp; Save
-                                        </button>
-                                        <button type="button" ng-click="removeXSLTTemplate($event, xsltTemplate)" class="btn btn-danger" uib-tooltip="Remove XSLT template">
+                                        </a>
+                                        <a ng-click="removeXSLTTemplate($event, xsltTemplate)" class="btn btn-danger"
+                                           data-title="Remove XSLT template">
                                             <i class="fa fa-trash" aria-hidden="true"></i>&nbsp; Remove
-                                        </button>
+                                        </a>
                                     </div>
                                 </form>
                             </div>
@@ -328,13 +361,23 @@
                                         <p class="help-block" ng-if="handlebarForm.template.$error.required">The template of handlebar template is required</p>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label" data-nodrag>Default template for
+                                        dictionary</label>
+
+                                    <div class="col-sm-1" data-nodrag>
+                                        <input type="checkbox" ng-model="addedHtmlTemplate.default">
+                                    </div>
+                                </div>
                                 <div class="form-group text-right">
-                                    <button type="button" ng-click="generateHandlebar(addedHtmlTemplate)" class="btn  btn-info" uib-tooltip="Generate from setting">
+                                    <a ng-click="generateHandlebar(addedHtmlTemplate)" class="btn  btn-info"
+                                       data-title="Generate from setting">
                                         <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
-                                    </button>
-                                    <button type="button" ng-click="addHandlebar(handlebarForm)" class="btn btn-success" uib-tooltip="Create handlebar">
+                                    </a>
+                                    <a ng-click="addHandlebar(handlebarForm)" class="btn btn-success"
+                                       data-title="Create handlebar">
                                         <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create
-                                    </button>
+                                    </a>
                                 </div>
                             </form>
                         </div>
@@ -366,16 +409,27 @@
                                             <p class="help-block" ng-if="handlebarForm.template.$error.required">The template of handlebar template is required</p>
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label" data-nodrag>Default template for
+                                            dictionary</label>
+
+                                        <div class="col-sm-1" data-nodrag>
+                                            <input type="checkbox" ng-model="htmlTemplate.default">
+                                        </div>
+                                    </div>
                                     <div class="form-group text-right">
-                                        <button type="button" ng-click="generateHandlebar(htmlTemplate)" class="btn btn-info" uib-tooltip="Generate from setting">
+                                        <a ng-click="generateHandlebar(htmlTemplate)" class="btn btn-info"
+                                           data-title="Generate from setting">
                                             <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
-                                        </button>
-                                        <button type="button" ng-click="editHandlebar(htmlTemplate, handlebarForm)" class="btn btn-success" uib-tooltip="Save handlebar">
+                                        </a>
+                                        <a ng-click="editHandlebar(htmlTemplate, handlebarForm)" class="btn btn-success"
+                                           data-title="Save handlebar">
                                             <i class="fa fa-save" aria-hidden="true"></i>&nbsp; Save
-                                        </button>
-                                        <button type="button" ng-click="removeHandlebar($event, htmlTemplate)" class="btn btn-danger" uib-tooltip="Remove handlebar">
+                                        </a>
+                                        <a ng-click="removeHandlebar($event, htmlTemplate)" class="btn btn-danger"
+                                           data-title="Remove handlebar">
                                             <i class="fa fa-trash" aria-hidden="true"></i>&nbsp; Remove
-                                        </button>
+                                        </a>
                                     </div>
                                 </form>
                             </div>

@@ -239,3 +239,33 @@ th[st-sort]
 {
   cursor: pointer;
 }
+
+a:hover
+{
+  color: red;
+  position: relative;
+}
+
+a[data-title]:hover:after
+{
+  content: attr(data-title);
+  margin: 1rem;
+  background-color: #222222;
+  color: #FFFFFF;
+  text-align: center;
+  padding: 4px 10px;
+  position: absolute;
+  font-size: 13px;
+  left: 0;
+  top: 100%;
+  white-space: nowrap;
+  z-index: 120px;
+  border-radius: 6px;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+}
+
+.angular-ui-tree-nodes .angular-ui-tree-nodes
+{
+  padding-left: 40px !important;
+}

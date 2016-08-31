@@ -16,13 +16,18 @@
 
     <script>
         $(document).ready(function() {
+            var previewEntry = JSON.parse(localStorage.getItem('previewEntry'));
+            xmlEntry = '<entry id="">';
+            xmlEntry += generateEntryXMLRecursive(previewEntry, false);
             $.ajax({
                 url: "https://abulafia.fi.muni.cz:9050/" + getURLParameter('dict_code'),
                 jsonp: "callback",
                 dataType: "jsonp",
                 data: {
-                    action: "preview_multi",
-                    entry_id: getURLParameter('entry_id'),
+                    action: "preview",
+                    entry_id: null,
+                    entry_xml: xmlEntry,
+                    format: 'json',
                     xslt: getURLParameter('template_code')
                 },
                 success: function (response) {
@@ -37,6 +42,58 @@
                 }
             });
         });
+
+        function generateEntryXMLRecursive(values, submerged) {
+            var xmlEntry = '';
+            if (submerged == false) {
+                var iteratedItems = 0;
+            }
+            var elemFile = '';
+            $.each(values, function (key, containerArray) {
+                if (submerged == false) {
+                    iteratedItems++;
+                }
+
+                //iterovani kvuli multiple containeru
+                $.each(containerArray, function (indexIt, container) {
+                    if (container.type != 'container') {
+                        if (container.values != undefined && container.values.length > 0) {
+                            $.each(container.values, function (keyIn, valueIn) {
+                                if (container.type == 'file') {
+                                    xmlEntry += '<' + key + ' elem_type="' + container.type + '">file path</' + key + '>';
+                                    if (elemFile != key) { //pro vlozeni jen jednou (jiz vlozenych souboru
+                                        elemFile = key;
+                                        $.each(container.fileValues, function (keyIn, nameFile) {
+                                            xmlEntry += '<' + key + ' elem_type="' + container.type + '">file path</' + key + '>';
+                                        });
+                                    }
+                                } else {
+                                    if (container.type == 'textarea') {
+                                        var strVal = valueIn.replace(/\n/g, '-newLine-');
+                                    } else {
+                                        var strVal = valueIn;
+                                    }
+                                    xmlEntry += '<' + key + ' elem_type="' + container.type + '">' + strVal + '</' + key + '>';
+                                }
+                            });
+                        } else {
+                            xmlEntry += '<' + key + ' elem_type="' + container.type + '"></' + key + '>';
+                        }
+                    } else {
+                        xmlEntry += '<' + key + ' elem_type="' + container.type + '">';
+                        xmlEntry += generateEntryXMLRecursive(container.containers, true);
+                        xmlEntry += '</' + key + '>';
+                    }
+                });
+
+                if (iteratedItems == Object.keys(values).length && submerged == false) { // konec => dokončit xml a uložit zaznam---------------
+                    xmlEntry += '</entry>';
+
+                }
+            });
+            return xmlEntry;
+        }
+
 
         function getURLParameter(sParam)
         {

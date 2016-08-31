@@ -2,7 +2,7 @@
 
 angular.module('debwrite.import', ['smart-table', 'ui.bootstrap', 'ngSanitize'])
 
-.controller('ImportCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', '$routeParams', '$sce', function($scope, $rootScope, $http, $mdDialog, $routeParams, $sce) {
+    .controller('ImportCtrl', ['$scope', '$rootScope', '$http', '$mdDialog', '$routeParams', '$sce', '$window', function ($scope, $rootScope, $http, $mdDialog, $routeParams, $sce, $window) {
     $scope.dictionary = null;
     $scope.import = {file:{}, delCurrent: true, overEntries: false};
     $scope.srcLog = '';
@@ -55,6 +55,7 @@ angular.module('debwrite.import', ['smart-table', 'ui.bootstrap', 'ngSanitize'])
             }, function (response) {
                 $rootScope.loading = false;
             });
+        $window.scrollTo(0, 0);
     };
 
 }]);

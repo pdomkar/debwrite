@@ -2,7 +2,7 @@
 
 angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
 
-    .controller('NewDictionaryCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$mdDialog', function ($scope, $rootScope, $http, $routeParams, $location, $mdDialog) {
+    .controller('NewDictionaryCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location', '$mdDialog', '$window', function ($scope, $rootScope, $http, $routeParams, $location, $mdDialog, $window) {
         $scope.editPage = false;
         $scope.showForm = true;
         $scope.dictionaryUsers = null;
@@ -382,7 +382,8 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     dict: $scope.newDictionary.code,
                     code: $scope.addedXSLTTemplate.code,
                     name: $scope.addedXSLTTemplate.name,
-                    template: escapeSemicolon($scope.addedXSLTTemplate.template)
+                    template: escapeSemicolon($scope.addedXSLTTemplate.template),
+                    default: $scope.addedXSLTTemplate.default
                 },
                 responseType: 'json'
             }).
@@ -390,7 +391,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     if (response.data.status == 'OK') {
                         $scope.loadDictInfo();
                         $rootScope.alert = {text: "XSLT template was added.", type: "success"};
-                        $scope.addedXSLTTemplate = {name: '', code: '', template: ''};
+                        $scope.addedXSLTTemplate = {name: '', code: '', template: '', default: false};
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
                         $rootScope.loading = false;
@@ -413,7 +414,8 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     dict: $scope.newDictionary.code,
                     code: template.code,
                     name: template.name,
-                    template: escapeSemicolon(template.template)
+                    template: escapeSemicolon(template.template),
+                    default: template.default
                 },
                 responseType: 'json'
             }).
@@ -519,7 +521,8 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     dict: $scope.newDictionary.code,
                     code: $scope.addedHtmlTemplate.code,
                     name: $scope.addedHtmlTemplate.name,
-                    template: escapeSemicolon($scope.addedHtmlTemplate.template)
+                    template: escapeSemicolon($scope.addedHtmlTemplate.template),
+                    default: $scope.addedHtmlTemplate.default
                 },
                 responseType: 'json'
             }).
@@ -527,7 +530,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     if (response.data.status == 'OK') {
                         $scope.loadDictInfo();
                         $rootScope.alert = {text: "Handlebar template was added.", type: "success"};
-                        $scope.addedHtmlTemplate = {name: '', code: '', template: ''};
+                        $scope.addedHtmlTemplate = {name: '', code: '', template: '', default: false};
                     } else {
                         $rootScope.alert = {text: response.data.text, type: "danger"};
                         $rootScope.loading = false;
@@ -550,7 +553,8 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     dict: $scope.newDictionary.code,
                     code: handlebar.code,
                     name: handlebar.name,
-                    template: escapeSemicolon(handlebar.template)
+                    template: escapeSemicolon(handlebar.template),
+                    default: handlebar.default
                 },
                 responseType: 'json'
             }).
@@ -595,7 +599,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 if(value.type == 'container') {
                     $scope.findHeadword(value.containers);
                 }
-                if(value.headword != '') {
+                if (value.headword != 'false') {
                     $scope.headwordForTemplate = value.element;
                 }
             });
@@ -674,12 +678,14 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         var pomXSLTTemplates = response.data.templates;
                         angular.forEach(pomXSLTTemplates, function(value, key) {
                             pomXSLTTemplates[key].template = unescapeSemicolon(pomXSLTTemplates[key].template);
+                            pomXSLTTemplates[key].default = (pomXSLTTemplates[key].default == "true");
                         });
                         $scope.xsltTemplates = pomXSLTTemplates;
 
                         var pomHtmlTemplates = response.data.htemplates;
                         angular.forEach(pomHtmlTemplates, function(value, key) {
                             pomHtmlTemplates[key].template = unescapeSemicolon(pomHtmlTemplates[key].template);
+                            pomHtmlTemplates[key].default = (pomHtmlTemplates[key].default == "true");
                         });
                         $scope.htmlTemplates = pomHtmlTemplates;
 
@@ -719,6 +725,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 $scope.editPage = false;
                 $rootScope.loading = false;
             }
+            $window.scrollTo(0, 0);
         };
 
     }]).directive("uniqueNameDict", function(){

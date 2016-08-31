@@ -148,7 +148,6 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
 
                 if ($scope.iteratedItems == Object.keys(values).length && submerged == false) { // konec => dokončit xml a uložit zaznam---------------
                     $scope.entryXML += '</entry>';
-
                     $http({
                         method: 'JSONP',
                         url: 'https://abulafia.fi.muni.cz:9050/' + $routeParams.code + '?callback=JSON_CALLBACK',
@@ -335,7 +334,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                 if (templateSelected.type == "xslt") {
                     localStorage.setItem('previewXSLTTemplate', templateSelected.template);
                     localStorage.setItem('previewEntry', JSON.stringify($scope.newEntry));
-                    $scope.previewUrl = "http://localhost:8000/preview.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
+                    $scope.previewUrl = "http://localhost:8000/previewXSLT.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
                 } else if (templateSelected.type == "handlebar") {
                     localStorage.setItem('previewHandlebarTemplate', templateSelected.template);
                     localStorage.setItem('previewEntry', JSON.stringify($scope.newEntry));
@@ -421,9 +420,15 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                             //set templateList property for select
                         $scope.templatesList.push({"code": "_preview_xml_", "name": "XML preview", "parent": "Blank XML", "type": "xml", "template": "null"});
                         $scope.previewTemplate = "_preview_xml_";
-                        //angular.forEach($scope.dictionary.templates, function(value, key) {
-                        //    $scope.templatesList.push({"code": value.code, "name": value.name, "parent": "XSLT templates", "type": "xslt", "template": value.template});
-                        //});
+                        angular.forEach($scope.dictionary.templates, function (value, key) {
+                            $scope.templatesList.push({
+                                "code": value.code,
+                                "name": value.name,
+                                "parent": "XSLT templates",
+                                "type": "xslt",
+                                "template": value.template
+                            });
+                        });
                         angular.forEach($scope.dictionary.htemplates, function(value, key) {
                             $scope.templatesList.push({"code": value.code, "name": value.name, "parent": "Handlebar templates", "type": "handlebar", "template": value.template});
                         });

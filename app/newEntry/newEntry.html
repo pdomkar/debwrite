@@ -66,7 +66,8 @@
                 </label>
                 <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="container[0].type == 'select'" ng-repeat="oneContainer in container track by $index">
                         <div ng-class="{'input-group' : oneContainer.multiple == true && oneContainer.values.length > 1}" class="m-b-04" ng-repeat="val in oneContainer.values track by $index">
-                            <select name="foo" ng-model="oneContainer.values[$index]" id="{{key}}" class="form-control" ng-required="oneContainer.required">
+                            <select name="foo" ng-model="oneContainer.values[$index]" id="{{key}}" class="form-control"
+                                    ng-required="oneContainer.required || oneContainer.headword=='true'">
                                 <option style="display:none" value="">Select {{oneContainer.label}} . . .</option>
                                 <option ng-repeat="option in oneContainer.options track by $index" value="{{option}}">{{option}}</option>
                             </select>
@@ -77,7 +78,9 @@
                 </div>
                 <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="container[0].type == 'textarea'" ng-repeat="oneContainer in container track by $index">
                         <div ng-class="{'input-group' : oneContainer.multiple == true && oneContainer.values.length > 1}" class="m-b-04" ng-repeat="val in oneContainer.values track by $index">
-                            <textarea rows="2" ng-model="oneContainer.values[$index]" change-new-lines="" name="foo" class="form-control" id="{{key}}" ng-required="oneContainer.required"> </textarea>
+                            <textarea rows="2" ng-model="oneContainer.values[$index]" change-new-lines="" name="foo"
+                                      class="form-control" id="{{key}}"
+                                      ng-required="oneContainer.required || oneContainer.headword=='true'"> </textarea>
                             <span class="input-group-btn" ng-if="oneContainer.multiple == true && oneContainer.values.length > 1">
                                 <a class="btn btn-warning" ng-click="removeContainerEntry(oneContainer.values, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
                             </span>
@@ -85,8 +88,12 @@
                 </div>
                 <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="container[0].type != 'select' && container[0].type != 'textarea'" ng-repeat="oneContainer in container track by $index">
                     <div ng-class="{'input-group' : oneContainer.multiple == true && oneContainer.values.length > 1}" class="m-b-04" ng-repeat="val in oneContainer.values track by $index">
-                        <input ng-if="oneContainer.type == 'file'" type="{{oneContainer.type}}" ng-file-model="oneContainer.values[$index]" name="foo" class="form-control" id="{{key}}" ng-required="oneContainer.required">
-                        <input ng-if="oneContainer.type != 'file'" type="{{oneContainer.type}}" ng-model="oneContainer.values[$index]" name="foo" class="form-control" id="{{key}}" ng-required="oneContainer.required">
+                        <input ng-if="oneContainer.type == 'file'" type="{{oneContainer.type}}"
+                               ng-file-model="oneContainer.values[$index]" name="foo" class="form-control" id="{{key}}"
+                               ng-required="oneContainer.required || oneContainer.headword=='true'">
+                        <input ng-if="oneContainer.type != 'file'" type="{{oneContainer.type}}"
+                               ng-model="oneContainer.values[$index]" name="foo" class="form-control" id="{{key}}"
+                               ng-required="oneContainer.required || oneContainer.headword=='true'">
                         <span class="input-group-btn" ng-if="oneContainer.multiple == true && oneContainer.values.length > 1">
                             <a class="btn btn-warning" ng-click="removeContainerEntry(oneContainer.values, $index)"><i class="fa fa-minus" aria-hidden="true"></i></a>
                         </span>

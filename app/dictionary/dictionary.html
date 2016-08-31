@@ -35,7 +35,15 @@
         <tbody data-link="row" class="rowlink">
         <tr ng-repeat="entry in entriesDisplayed">
             <td>
-                <a href="https://abulafia.fi.muni.cz:9050/{{dictionary.dict_code}}?action=get&entry_id={{entry.id}}&format=xml">{{entry.head}}</a>
+                <a ng-if="defaultTemplate == null"
+                   href="https://abulafia.fi.muni.cz:9050/{{dictionary.dict_code}}?action=get&entry_id={{entry.id}}&format=xml"
+                   target="_blank">{{entry.head}}</a>
+                <a ng-if="defaultTemplate != null && defaultTemplate.type == 'xslt'"
+                   href="previewXSLT.html?dict_code={{dictionary.dict_code}}&entry_id={{entry.id}}&template_code={{defaultTemplate.code}}"
+                   target="_blank">{{entry.head}}</a>
+                <a ng-if="defaultTemplate != null && defaultTemplate.type == 'handlebar'"
+                   href="previewHandlebar.html?dict_code={{dictionary.dict_code}}&entry_id={{entry.id}}&template_code={{defaultTemplate.code}}"
+                   target="_blank">{{entry.head}}</a>
             </td>
             <td>{{entry.author}}</td>
             <td>{{entry.last_edit}}</td>
@@ -53,12 +61,16 @@
                     href="https://abulafia.fi.muni.cz:9050/{{dictionary.dict_code}}?action=get&entry_id={{entry.id}}&format=xml"
                     target="_blank">XML</a></td>
             <td class="text-right rowlink-skip">
-                <a ng-href="#/newEntry/{{dictionary.dict_code}}/{{entry.id}}" ng-if="dictionary.current_perm == 'm' || dictionary.current_perm == 'a' || dictionary.current_perm == 'e'" type="button" class="btn  btn-xs btn-info" uib-tooltip="Edit entry">
+                <a ng-href="#/newEntry/{{dictionary.dict_code}}/{{entry.id}}"
+                   ng-if="dictionary.current_perm == 'm' || dictionary.current_perm == 'a' || dictionary.current_perm == 'e'"
+                   type="button" class="btn  btn-xs btn-info" data-title="Edit entry">
                     <i class="fa fa-pencil" aria-hidden="true"></i> <strong>Edit entry</strong>
                 </a>
-                <button type="button" ng-click="removeEntry($event, entry.id)" ng-if="dictionary.current_perm == 'm' || dictionary.current_perm == 'a'" class="btn btn-xs btn-danger" uib-tooltip="Remove entry">
+                <a ng-click="removeEntry($event, entry.id)"
+                   ng-if="dictionary.current_perm == 'm' || dictionary.current_perm == 'a'"
+                   class="btn btn-xs btn-danger" data-title="Remove entry">
                     <i class="fa fa-trash" aria-hidden="true"></i>
-                </button>
+                </a>
             </td>
         </tr>
         </tbody>

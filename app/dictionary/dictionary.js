@@ -2,11 +2,12 @@
 
 angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
 
-.controller('DictionaryCtrl', ['$scope', '$http', '$routeParams', '$rootScope', '$mdDialog', function($scope, $http, $routeParams, $rootScope, $mdDialog) {
+    .controller('DictionaryCtrl', ['$scope', '$http', '$routeParams', '$rootScope', '$mdDialog', '$window', function ($scope, $http, $routeParams, $rootScope, $mdDialog, $window) {
     $scope.dictionary = null;
     $scope.entries = [];
     $scope.entriesId = '';
     $scope.entriesDisplayed = [];
+        $scope.defaultTemplate = null;
 
 
     $scope.removeEntry = function($event, id) {
@@ -75,7 +76,9 @@ angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
                                     angular.forEach(JSON.parse($scope.dictionary.schema).containers, function(valueIn, keyIn) {
                                         if(valueIn.headword == 'true') {
                                             if(response.data.result.entry[valueIn.element]) {
-                                                $scope.entries[key].head = response.data.result.entry[valueIn.element].$;
+                                                if (response.data.result.entry[valueIn.element].$) {
+                                                    $scope.entries[key].head = response.data.result.entry[valueIn.element].$;
+                                                }
                                             }
                                         }
                                     });
@@ -114,6 +117,18 @@ angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
             then(function (response) {
                 if (response.data.status == 'OK') {
                     $scope.dictionary = response.data;
+
+                    angular.forEach($scope.dictionary.templates, function (valueIn, keyIn) {
+                        if (valueIn.default == 'true') {
+                            $scope.defaultTemplate = {type: 'xslt', code: valueIn.code};
+                        }
+                    });
+                    angular.forEach($scope.dictionary.htemplates, function (valueIn, keyIn) {
+                        if (valueIn.default == 'true') {
+                            $scope.defaultTemplate = {type: 'handlebar', code: valueIn.code};
+                        }
+                    });
+
                 } else {
 
                 }
@@ -122,6 +137,7 @@ angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
 
         //load entries of dict
         $scope.loadEntries();
+        $window.scrollTo(0, 0);
     };
 
 }]);
