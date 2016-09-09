@@ -334,16 +334,16 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                 if (templateSelected.type == "xslt") {
                     localStorage.setItem('previewXSLTTemplate', templateSelected.template);
                     localStorage.setItem('previewEntry', JSON.stringify($scope.newEntry));
-                    $scope.previewUrl = "http://localhost:8000/previewXSLT.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
+                    $scope.previewUrl = "previewXSLT.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
                 } else if (templateSelected.type == "handlebar") {
                     localStorage.setItem('previewHandlebarTemplate', templateSelected.template);
                     localStorage.setItem('previewEntry', JSON.stringify($scope.newEntry));
-                    $scope.previewUrl = "http://localhost:8000/preview.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
+                    $scope.previewUrl = "preview.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
                 } else {
                     $scope.previewXML = '<entry id="' + $scope.entryId + '">\n';
                     $scope.generatePreviewXMLRecursive($scope.newEntry, false);
                     localStorage.setItem('previewXML', $scope.previewXML);
-                    $scope.previewUrl = "http://localhost:8000/preview.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
+                    $scope.previewUrl = "preview.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
                 }
             }
             var iFrame = $("#iframePreview");
