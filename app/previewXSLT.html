@@ -17,15 +17,21 @@
     <script>
         $(document).ready(function() {
             var previewEntry = JSON.parse(localStorage.getItem('previewEntry'));
-            xmlEntry = '<entry id="">';
-            xmlEntry += generateEntryXMLRecursive(previewEntry, false);
+            entryId = null;
+            xmlEntry = null;
+            if (getURLParameter('entry_id') != '') {
+                entryId = getURLParameter('entry_id');
+            } else {
+                xmlEntry = '<entry id="">';
+                xmlEntry += generateEntryXMLRecursive(previewEntry, false);
+            }
             $.ajax({
                 url: "https://abulafia.fi.muni.cz:9050/" + getURLParameter('dict_code'),
                 jsonp: "callback",
                 dataType: "jsonp",
                 data: {
                     action: "preview",
-                    entry_id: null,
+                    entry_id: entryId,
                     entry_xml: xmlEntry,
                     format: 'json',
                     xslt: getURLParameter('template_code')
@@ -111,7 +117,7 @@
 
     </script>
 </head>
-    <body>
+<body>
 
-    </body>
+</body>
 </html>
