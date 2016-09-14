@@ -437,15 +437,20 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
             $scope.headwordForTemplate = null;
             $scope.findHeadword($scope.newDictionary.containers);
             $scope.pomXSLTTemplate = '<?xml version=\'1.0\' encoding=\'utf-8\'?>\n' +
-            '<xsl:stylesheet version=\'1.0\' xmlns:xsl=\'http://www.w3.org/1999/XSL/Transform\'>' +
-            '<xsl:template match=\'/entry\'>' +
-            '<html><head>' +
-            '<meta content=\'text/html; charset=utf-8\' http-equiv=\'Content-Type\'/>' +
-            '<title>' + $scope.newDictionary.name + ': <xsl:value-of select="' + $scope.headwordForTemplate + '"/> (DEBWrite)</title>' +
-            '</head>\n<body>' +
-            '<h1><xsl:value-of select="' + $scope.headwordForTemplate + '"/></h1>\n' +
-            '<xsl:apply-templates/></body></html></xsl:template>\n';
-                $scope.generateXSLTContainersRecursive($scope.newDictionary.containers);
+                '<xsl:stylesheet version=\'1.0\' xmlns:xsl=\'http://www.w3.org/1999/XSL/Transform\'>' +
+                '<xsl:template match=\'/entry\'>' +
+                '<html><head>' +
+                '<meta content=\'text/html; charset=utf-8\' http-equiv=\'Content-Type\'/>' +
+                '<title>' + $scope.newDictionary.name + ': <xsl:value-of select="' + $scope.headwordForTemplate + '"/> (DEBWrite)</title>' +
+                '<style type="text/css">.' + $scope.headwordForTemplate + '{color: blue}\n'+
+                '.type_container {border: 1px solid #000}\n' +
+                '.type_container {background-color:#eee}\n' +
+                '</style>\n' +
+                '</head>\n<body>' +
+                '<h1><xsl:value-of select="' + $scope.headwordForTemplate + '"/></h1>\n' +
+                '<xsl:apply-templates/></body></html></xsl:template>\n' +
+                '<xsl:template name="file"><xsl:param name="file_element"/><br/><xsl:if test="starts-with($file_element/@mime, \'image\')"><img src="/files/' + $scope.newDictionary.code + '/{.}" style="max-width:400px"/></xsl:if><xsl:if test="starts-with($file_element/@mime, \'audio\')"><audio src="/files/' + $scope.newDictionary.code + '/{.}" controls="true"/></xsl:if><xsl:if test="starts-with($file_element/@mime, \'video\')"><video src="/files/' + $scope.newDictionary.code + '/{.}" controls="true" style="max-width:400px"/></xsl:if><br/></xsl:template>\n\n';
+            $scope.generateXSLTContainersRecursive($scope.newDictionary.containers);
             $scope.pomXSLTTemplate += '</xsl:stylesheet>';
             template.template = $scope.pomXSLTTemplate;
         };
@@ -453,11 +458,12 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
         $scope.generateXSLTContainersRecursive = function (values) {
             angular.forEach(values, function(value, key) {
                 if(value.type == 'container') {
-                    $scope.pomXSLTTemplate += '<xsl:template match="' + value.element + '"><div class="' + value.element + '" style="border: 1px solid #000; background-color:#eee;">' + value.label + ': <xsl:apply-templates/></div><br/></xsl:template>\n';
+                    $scope.pomXSLTTemplate += '<xsl:template match="' + value.element + '"><div class="' + value.element + ' type_' + value.type + '">' + value.label + ': <xsl:apply-templates/></div><br/></xsl:template>\n';
                     $scope.generateXSLTContainersRecursive(value.containers);
+                } else if (value.type == 'file') {
+                    $scope.pomXSLTTemplate += '<xsl:template match="' + value.element + '"><span class="' + value.element + ' type_' + value.type + '">' + value.label + ': <xsl:call-template name="file"><xsl:with-param name="file_element" select="."/></xsl:call-template></span><br/></xsl:template>\n';
                 } else {
-                    $scope.pomXSLTTemplate += '<xsl:template match="' + value.element + '"><span class="' + value.element + '">' + value.label + ': <xsl:apply-templates/></span><br/></xsl:template>\n';
-
+                    $scope.pomXSLTTemplate += '<xsl:template match="' + value.element + '"><span class="' + value.element + ' type_' + value.type + '">' + value.label + ': <xsl:apply-templates/></span><br/></xsl:template>\n';
                 }
             });
         };
@@ -576,8 +582,8 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
             $scope.headwordForTemplate = null;
             $scope.findHeadword($scope.newDictionary.containers);
             $scope.pomHTMLTemplate = '<html><head><meta content=\'text/html; charset=utf-8\' http-equiv=\'Content-Type\'/><title>' +
-            $scope.newDictionary.name + ': {{entry.' + ($scope.headwordForTemplate || 'empty') + '}} (DEBWrite)</title></head><body>\n<h1>{{entry.' + ($scope.headwordForTemplate || 'empty') + '}}</h1>\n';
-                $scope.generateHTMLContainersRecursive($scope.newDictionary.containers);
+                $scope.newDictionary.name + ': {{entry.' + ($scope.headwordForTemplate || 'empty') + '}} (DEBWrite)</title></head><body>\n<h1>{{entry.' + ($scope.headwordForTemplate || 'empty') + '}}</h1>\n';
+            $scope.generateHTMLContainersRecursive($scope.newDictionary.containers);
             $scope.pomHTMLTemplate += '</body></html>';
             handlebar.template = $scope.pomHTMLTemplate;
         };
@@ -586,7 +592,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
             angular.forEach(values, function(value, key) {
                 if(value.type == 'container') {
                     $scope.pomHTMLTemplate += '<div style="border: 1px solid #000">\n';
-                        $scope.generateHTMLContainersRecursive(value.containers);
+                    $scope.generateHTMLContainersRecursive(value.containers);
                     $scope.pomHTMLTemplate += '</div>\n';
                 } else {
                     $scope.pomHTMLTemplate += '<span><b>' + value.label + '</b>: {{entry.' + value.element + '}}</span><br/>\n'
@@ -599,7 +605,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 if(value.type == 'container') {
                     $scope.findHeadword(value.containers);
                 }
-                if (value.headword != 'false') {
+                if (value.headword == 'true') {
                     $scope.headwordForTemplate = value.element;
                 }
             });
@@ -694,7 +700,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         $rootScope.alert = {text: response.data.text, type: "danger"};
                     }
 
-                        //load users
+                    //load users
                     $http({
                         method: 'JSONP',
                         url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',

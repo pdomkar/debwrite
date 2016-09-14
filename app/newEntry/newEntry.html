@@ -88,7 +88,7 @@
                 </div>
                 <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="container[0].type != 'select' && container[0].type != 'textarea'" ng-repeat="oneContainer in container track by $index">
                     <div ng-class="{'input-group' : oneContainer.multiple == true && oneContainer.values.length > 1}" class="m-b-04" ng-repeat="val in oneContainer.values track by $index">
-                        <input ng-if="oneContainer.type == 'file'" type="{{oneContainer.type}}"
+                        <input ng-if="oneContainer.type == 'file' && ((oneContainer.multiple == true) || ( (oneContainer.multiple == false) && (oneContainer.fileValues).length == 0) )" type="{{oneContainer.type}}"
                                ng-file-model="oneContainer.values[$index]" name="foo" class="form-control" id="{{key}}"
                                ng-required="oneContainer.required || oneContainer.headword=='true'">
                         <input ng-if="oneContainer.type != 'file'" type="{{oneContainer.type}}"

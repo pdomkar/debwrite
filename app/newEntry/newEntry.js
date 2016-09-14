@@ -49,6 +49,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             if ($scope.fileEntries[i] && $scope.fileEntries[i].value && $scope.fileEntries[i].value.data) {
                 var fileData = $scope.fileEntries[i].value.data;
                 fileData = fileData.match(/data:([-\w]+\/[-\w\+\.]+)?;base64,(.*)/);
+
                 $http({
                     method: 'JSONP',
                     url: 'https://abulafia.fi.muni.cz:9050/' + $routeParams.code + '?callback=JSON_CALLBACK',
@@ -91,7 +92,11 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                         }
                     });
             } else {
-                $scope.generateEntryXMLRecursive($scope.newEntry, false);
+                if (i < (($scope.fileEntries.length) - 1)) {
+                    $scope.saveFiles(++i);
+                } else {
+                    $scope.generateEntryXMLRecursive($scope.newEntry, false);
+                }
             }
         };
 
