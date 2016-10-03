@@ -76,11 +76,27 @@
                                         <option value="container">container</option>
                                         <option value="file">file</option>
                                         <option value="select">select</option>
+                                        <option value="crossreference">crossreference</option>
                                     </select></div>
                                 <label ng-show="container.type=='select'" for="options" class="col-sm-1 control-label" data-nodrag>Options</label>
                                 <div ng-show="container.type=='select'" ng-class="{ 'has-error': innerForm.options.$error.required }" class="col-sm-2" data-nodrag>
                                     <input type="text" ng-model="container.options" name="options" class="form-control" id="options" ng-required="container.type == 'select'" placeholder="Separate by comma ','">
                                 </div>
+                                <label ng-show="container.type=='crossreference'" for="crossreference_dict"
+                                       class="col-sm-1 control-label" data-nodrag>Cross ref dict</label>
+
+                                <div ng-show="container.type=='crossreference'" class="col-sm-2"
+                                     ng-class="{ 'has-error': innerForm.crossreference_dict.$error.required }">
+                                    <select ng-model="container.crossreference_dict" name="crossreference_dict"
+                                            class="form-control" id="crossreference_dict" data-nodrag
+                                            ng-required="container.type == 'crossreference'">
+                                        <option style="display:none" value="">Choose dict</option>
+                                        <option ng-repeat="availableDict in availableDicts track by availableDict.code"
+                                                value="{{availableDict.code}}">{{availableDict.name}}
+                                        </option>
+                                    </select>
+                                </div>
+
                                 <a data-nodrag ng-click="removeContainer(newDictionary.containers, container.id)"
                                    class="btn btn-danger pull-right" title="Remove element">
                                     <i class="fa fa-trash" aria-hidden="true"></i>

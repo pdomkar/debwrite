@@ -12,6 +12,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
         $scope.addHandlebarShowBox = false;
         $scope.addXSLTTemplateShowBox = false;
         $scope.dictionaryUsersDisplayed = [];
+        $scope.availableDicts = [];
         $scope.newDictionary = {
             name: '', code: '', containers: [
                 {
@@ -23,6 +24,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: true,
                     type: "text",
                     options: "",
+                    crossreference_dict: null,
                     containers: []
                 },
                 {
@@ -34,6 +36,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "select",
                     options: "noun,verb,adjective,adverb",
+                    crossreference_dict: null,
                     containers: []
                 },
                 {
@@ -45,6 +48,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "text",
                     options: "",
+                    crossreference_dict: null,
                     containers: []
                 },
                 {
@@ -56,6 +60,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "text",
                     options: "",
+                    crossreference_dict: null,
                     containers: []
                 },
                 {
@@ -67,6 +72,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "text",
                     options: "",
+                    crossreference_dict: null,
                     containers: []
                 },
                 {
@@ -78,6 +84,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "container",
                     options: "",
+                    crossreference_dict: null,
                     containers: [
                         {
                             id: 6,
@@ -88,6 +95,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                             required: false,
                             type: "number",
                             options: "",
+                            crossreference_dict: null,
                             containers: []
                         },
                         {
@@ -99,6 +107,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                             required: false,
                             type: "text",
                             options: "",
+                            crossreference_dict: null,
                             containers: []
                         },
                         {
@@ -110,6 +119,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                             required: false,
                             type: "textarea",
                             options: "",
+                            crossreference_dict: null,
                             containers: []
                         },
                         {
@@ -121,6 +131,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                             required: false,
                             type: "textarea",
                             options: "",
+                            crossreference_dict: null,
                             containers: []
                         }
                     ]
@@ -134,6 +145,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "text",
                     options: "",
+                    crossreference_dict: null,
                     containers: []
                 },
                 {
@@ -145,6 +157,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "text",
                     options: "",
+                    crossreference_dict: null,
                     containers: []
                 },
                 {
@@ -156,6 +169,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "textarea",
                     options: "",
+                    crossreference_dict: null,
                     containers: []
                 },
                 {
@@ -167,6 +181,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     required: false,
                     type: "textarea",
                     options: "",
+                    crossreference_dict: null,
                     containers: []
                 }
             ]
@@ -210,6 +225,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 required: false,
                 type: "text",
                 options: "",
+                crossreference_dict: null,
                 containers: []
             });
         };
@@ -721,9 +737,36 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 });
         };
 
+        $scope.loadAvailableDictForCrossRef = function () {
+            $http({
+                method: 'JSONP',
+                url: 'https://abulafia.fi.muni.cz:9050/admin?callback=JSON_CALLBACK',
+                params: {action: 'dict_list'},
+                responseType: 'json'
+            }).
+                then(function (response) {
+                    $scope.availableDicts.push({code: "-", name: 'This'});
+                    angular.forEach(response.data.dict_a, function (value, key) {
+                        $scope.availableDicts.push(value);
+                    });
+                    angular.forEach(response.data.dict_m, function (value, key) {
+                        $scope.availableDicts.push(value);
+                    });
+                    angular.forEach(response.data.dict_r, function (value, key) {
+                        $scope.availableDicts.push(value);
+                    });
+                    angular.forEach(response.data.dict_w, function (value, key) {
+                        $scope.availableDicts.push(value);
+                    });
+                }, function (response) {
+                    $scope.availableDicts.push({code: "-", name: 'This'});
+                });
+        };
+
         $scope.init = function () {
             $rootScope.loading = true;
             $rootScope.dictDetail = $routeParams.code;
+            $scope.loadAvailableDictForCrossRef();
             if ($routeParams.code != null) {
                 $scope.editPage = true;
                 $scope.loadDictInfo();

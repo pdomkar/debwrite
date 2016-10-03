@@ -17,8 +17,15 @@
                         <button type="button" class="btn btn-default" ng-click="preparePreview()">Preview</button>
                     </div>
                     <div class="text-right col-sm-4">
-                        <button ng-if="!editPage" ng-click="saveEntry($event)" type="submit" class="btn btn-success">Create entry</button>
-                        <button ng-if="editPage" ng-click="saveEntry($event)" type="submit" class="btn btn-info">Edit entry</button>
+                        <button ng-if="!editPage" ng-click="saveEntry($event, false)" type="submit"
+                                class="btn btn-success">Create entry
+                        </button>
+                        <button ng-if="editPage" ng-click="saveEntry($event, false)" type="submit" class="btn btn-info">
+                            Edit entry
+                        </button>
+                        <button ng-if="editPage" ng-click="saveEntry($event, true)" type="submit" class="btn btn-info">
+                            Edit entry and close
+                        </button>
                     </div>
                 </div>
 
@@ -30,7 +37,7 @@
             </form>
         </div>
     </div>
-
+    {{newEntry}}
     <script type="text/ng-template" id="container_renderer.html">
         <div class="row cont" ng-if="container[0] != undefined && container[0].type == 'container'">
             <label class="col-sm-2 control-label">
@@ -86,7 +93,38 @@
                             </span>
                         </div>
                 </div>
-                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}" ng-if="container[0].type != 'select' && container[0].type != 'textarea'" ng-repeat="oneContainer in container track by $index">
+                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}"
+                     ng-if="container[0].type == 'crossreference'"
+                     ng-repeat="oneContainer in container track by $index">
+                    <div ng-class="{'input-group' : oneContainer.multiple == true && oneContainer.values.length > 1}"
+                         class="m-b-04" ng-repeat="val in oneContainer.values track by $index">
+                        <div class="col-sm-5">
+                            <input type="text"
+                                   ng-change="loadEntriesForSelect(searchText, oneContainer.dictCode, key, $index)"
+                                   ng-model="searchText" name="foo" class="form-control" id="{{key}}"
+                                   ng-required="oneContainer.required || oneContainer.headword=='true'">
+                        </div>
+                        <div class="col-sm-5" ng-show="(oneContainer.findEntries[$index]).length > 0">
+                            <select name="foo" ng-model="(oneContainer.values[$index])" id="{{key}}"
+                                    class="form-control"
+                                    ng-required="oneContainer.required || oneContainer.headword=='true'">
+                                <option style="display:none" value="">Choose entry</option>
+                                <option ng-repeat="entry in (oneContainer.findEntries)[$index] track by $index"
+                                        value="{{entry.id}}">{{entry.head}}
+                                </option>
+                            </select>
+                        </div>
+                        <span class="input-group-btn"
+                              ng-if="oneContainer.multiple == true && oneContainer.values.length > 1">
+                            <a class="btn btn-warning"
+                               ng-click="removeContainerEntry(oneContainer.values, $index);removeContainerEntry(oneContainer.findEntries, $index)"><i
+                                    class="fa fa-minus" aria-hidden="true"></i></a>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-sm-10" ng-class="{'has-error': innerForm.foo.$error.required}"
+                     ng-if="container[0].type != 'select' && container[0].type != 'textarea' && container[0].type != 'crossreference'"
+                     ng-repeat="oneContainer in container track by $index">
                     <div ng-class="{'input-group' : oneContainer.multiple == true && oneContainer.values.length > 1}" class="m-b-04" ng-repeat="val in oneContainer.values track by $index">
                         <input ng-if="oneContainer.type == 'file' && ((oneContainer.multiple == true) || ( (oneContainer.multiple == false) && (oneContainer.fileValues).length == 0) )" type="{{oneContainer.type}}"
                                ng-file-model="oneContainer.values[$index]" name="foo" class="form-control" id="{{key}}"

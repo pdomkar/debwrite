@@ -10,7 +10,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
         $scope.previewTemplate = "_preview_xml_";
         $scope.templatesList = [];
 
-        $scope.saveEntry = function () {
+        $scope.saveEntry = function ($event, $close) {
             $scope.$broadcast('show-errors-check-validity');
             if ($scope.newEntryForm.$invalid) {
                 return;
@@ -20,7 +20,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             $scope.setFileEntriesRecursive($scope.newEntry);
             $scope.entryXML = '<entry id="' + $scope.entryId + '">';
             $scope.filePaths = [];
-            $scope.saveFiles(0); // nasledne dokončí xml string a uloží položku
+            $scope.saveFiles(0, $close); // nasledne dokončí xml string a uloží položku
         };
 
         $scope.setFileEntriesRecursive = function(values) {
@@ -44,8 +44,9 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
         /**
          * Ulozi soubory a do filePaths ulozi vracenou cestu k souboru, po ulozeni vsech souboru zavola funkci generateEntryXMLRecursive
          * @param i index ukladaneho souboru
+         * @param $close should newEedit page close?
          */
-        $scope.saveFiles = function (i) {
+        $scope.saveFiles = function (i, $close) {
             if ($scope.fileEntries[i] && $scope.fileEntries[i].value && $scope.fileEntries[i].value.data) {
                 var fileData = $scope.fileEntries[i].value.data;
                 fileData = fileData.match(/data:([-\w]+\/[-\w\+\.]+)?;base64,(.*)/);
@@ -64,38 +65,38 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                         if (response.data.status == 'OK') {
                             $scope.filePaths[$scope.fileEntries[i].key] = response.data.filename;
                             if (i < (($scope.fileEntries.length) - 1)) {
-                                $scope.saveFiles(++i);
+                                $scope.saveFiles(++i, $close);
 
                             } else {
                                 if (i == (($scope.fileEntries.length) - 1)) {
-                                    $scope.generateEntryXMLRecursive($scope.newEntry, false);
+                                    $scope.generateEntryXMLRecursive($scope.newEntry, false, $close);
                                 }
                             }
                         } else {
                             $scope.filePaths[$scope.fileEntries[i].key] = "error";
                             if (i < (($scope.fileEntries.length) - 1)) {
-                                $scope.saveFiles(++i);
+                                $scope.saveFiles(++i, $close);
                             } else {
                                 if (i == (($scope.fileEntries.length) - 1)) {
-                                    $scope.generateEntryXMLRecursive($scope.newEntry, false);
+                                    $scope.generateEntryXMLRecursive($scope.newEntry, false, $close);
                                 }
                             }
                         }
                     }, function (response) {
                         $scope.filePaths[$scope.fileEntries[i].key] = "error";
                         if (i < (($scope.fileEntries.length) - 1)) {
-                            $scope.saveFiles(++i);
+                            $scope.saveFiles(++i, $close);
                         } else {
                             if (i == (($scope.fileEntries.length) - 1)) {
-                                $scope.generateEntryXMLRecursive($scope.newEntry, false);
+                                $scope.generateEntryXMLRecursive($scope.newEntry, false, $close);
                             }
                         }
                     });
             } else {
                 if (i < (($scope.fileEntries.length) - 1)) {
-                    $scope.saveFiles(++i);
+                    $scope.saveFiles(++i, $close);
                 } else {
-                    $scope.generateEntryXMLRecursive($scope.newEntry, false);
+                    $scope.generateEntryXMLRecursive($scope.newEntry, false, $close);
                 }
             }
         };
@@ -104,8 +105,9 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
          * Vygeneruje vysledný xml soubor a na konci ho ulozi
          * @param values object s jednotlivými položkami pro generovani xml
          * @param submerged true pokud se jedna o volaní z rekurze
+         * @param $close Should newEdit Page close?
          */
-        $scope.generateEntryXMLRecursive = function (values, submerged) {
+        $scope.generateEntryXMLRecursive = function (values, submerged, $close) {
             if (submerged == false) {
                 $scope.iteratedItems = 0;
             }
@@ -132,6 +134,12 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                                             $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">' + nameFile + '</' + key + '>';
                                         });
                                     }
+                                } else if (container.type == 'crossreference') {
+                                    angular.forEach(container.findEntries[keyIn], function (object, index) {
+                                        if (object.id == valueIn) {
+                                            $scope.entryXML += '<' + key + ' elem_type="' + container.type + '" dict_code="' + container.dictCode + '" entry_id="' + object.id + '">' + object.head + '</' + key + '>';
+                                        }
+                                    });
                                 } else {
                                     if(container.type == 'textarea') {
                                         var strVal = valueIn.replace(/\n/g, '-newLine-');
@@ -146,7 +154,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                         }
                     } else {
                         $scope.entryXML += '<' + key + ' elem_type="' + container.type + '">';
-                        $scope.generateEntryXMLRecursive(container.containers, true);
+                        $scope.generateEntryXMLRecursive(container.containers, true, $close);
                         $scope.entryXML += '</' + key + '>';
                     }
                 });
@@ -174,7 +182,9 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                                 $rootScope.alert = {text: response.data.text, type: "danger"};
                             }
                             $rootScope.loading = false;
-                            $location.path('/dictionaries/' + $routeParams.code);
+                            if ($close) {
+                                $location.path('/dictionaries/' + $routeParams.code);
+                            }
                         }, function (response) {
                             if ($routeParams.id == null) {
                                 $rootScope.alert = {text: "Failure while added entry.", type: "danger"};
@@ -187,13 +197,14 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             });
         };
 
-
         $scope.generateNewEntryRecursive = function (values) {
             angular.forEach(values, function (value, key) {
                 if (value.type == 'number') {
                     $scope.newEntry += '"' + value.element + '": [{"id": ' + value.id + ', "label": "' + value.label + '", "headword": "' + value.headword + '", "multiple": ' + value.multiple + ', "required": ' + value.required + ', "type": "' + value.type + '", "options": ' + JSON.stringify(value.options) + ', "containers": {}, "values": [0]}], ';
                 } else if (value.type == 'file') {
                     $scope.newEntry += '"' + value.element + '": [{"id": ' + value.id + ', "label": "' + value.label + '", "headword": "' + value.headword + '", "multiple": ' + value.multiple + ', "required": ' + value.required + ', "type": "' + value.type + '", "options": ' + JSON.stringify(value.options) + ', "containers": {}, "values": [{}]}], ';
+                } else if (value.type == 'crossreference') {
+                    $scope.newEntry += '"' + value.element + '": [{"id": ' + value.id + ', "label": "' + value.label + '", "headword": "' + value.headword + '", "multiple": ' + value.multiple + ', "required": ' + value.required + ', "type": "' + value.type + '", "options": ' + JSON.stringify(value.options) + ', "containers": {}, "dictCode": "' + value.crossreference_dict + '", "findEntries": [[]], "values": [""]}], ';
                 } else if (value.type == 'container') {
                     $scope.newEntry += '"' + value.element + '": [{"id": ' + value.id + ', "label": "' + value.label + '", "headword": "' + value.headword + '", "multiple": ' + value.multiple + ', "required": ' + value.required + ', "type": "' + value.type + '", "options": ' + JSON.stringify(value.options) + ', "containers": {';
                     $scope.generateNewEntryRecursive(value.containers);
@@ -261,6 +272,42 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                             }
                         }
                         $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "values": [{}], "fileValues": [' + valStr + ']}], ';
+                } else if (container.type == "crossreference") {
+                    if (Array.isArray(entry[container.element])) {
+                        var valStr = '';
+                        var entryJson = '';
+                        angular.forEach(entry[container.element], function (entryVal, key) {
+                            if (entryVal["@entry_id"] == undefined || entryVal.$ == undefined || entryVal["@entry_id"] == "undefined") {
+                                valStr += '';
+                            } else {
+                                valStr += '"' + entryVal["@entry_id"] + '", ';
+                                entryJson += '[' + JSON.stringify({
+                                        "id": "" + entryVal["@entry_id"] + "",
+                                        "head": "" + entryVal.$ + ""
+                                    }) + '], ';
+                            }
+                        });
+                        var lastChar = (valStr).slice(-2);
+                        if (lastChar == ', ') {
+                            valStr = (valStr).slice(0, -2);
+                        }
+
+                        var lastCharE = (entryJson).slice(-2);
+                        if (lastCharE == ', ') {
+                            entryJson = (entryJson).slice(0, -2);
+                        }
+                    } else {
+                        if (entry[container.element]["@entry_id"] == undefined || entry[container.element]["@entry_id"] == "undefined") {
+                            var valStr = '';
+                        } else {
+                            var valStr = '"' + entry[container.element]["@entry_id"] + '"';
+                            entryJson = '[' + JSON.stringify({
+                                    "id": entry[container.element]["@entry_id"],
+                                    "head": entry[container.element].$
+                                }) + ']';
+                        }
+                    }
+                    $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "dictCode": "' + container.crossreference_dict + '", "findEntries": [' + entryJson + '], "values": [' + valStr + ']}], ';
                 } else {
                         if(Array.isArray(entry[container.element])) {
                             var valStr = '';
@@ -296,6 +343,9 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                 } else if (value.type == 'number') {
                     value.values.push(0);
                 } else {
+                    if (value.type == 'crossreference') {
+                        value.findEntries.push([]);
+                    }
                     value.values.push("");
                 }
             }
@@ -396,6 +446,69 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                     $scope.previewXML += '</entry>';
                 }
             });
+        };
+
+        $scope.loadEntriesForSelect = function (value, dictCode, entry, index) {
+            if (value != undefined && value != null && value.length > 0) {
+                $http({
+                    method: 'JSONP',
+                    url: 'https://abulafia.fi.muni.cz:9050/' + dictCode + '?callback=JSON_CALLBACK',
+                    params: {
+                        action: 'list',
+                        search: value
+                    },
+                    responseType: 'json'
+                }).
+                    then(function (response) {
+                        $scope.loadTextValueRecursive($scope.newEntry, dictCode, entry, index, response.data.entries);
+                    }, function (response) {
+                        $rootScope.loading = false;
+                    });
+            }
+        };
+
+
+        $scope.loadTextValueRecursive = function (values, dictCode, entry, index, data) {
+            angular.forEach(values, function (value, key) {
+                if (key == entry) {
+                    if (values[key]) {
+                        values[key][0].findEntries[index] = data;
+                        //set name
+                        angular.forEach(values[key][0].findEntries, function (valueIn, keyIn) {
+                            $http({
+                                method: 'JSONP',
+                                url: 'https://abulafia.fi.muni.cz:9050/' + dictCode + '?callback=JSON_CALLBACK',
+                                params: {
+                                    action: 'get',
+                                    entry_id: valueIn.id,
+                                    format: 'json'
+                                },
+                                responseType: 'json'
+                            }).
+                                then(function (response) {
+                                    if (response.data.status == 'OK') {
+                                        angular.forEach($scope.dictionary.schema, function (valueInIn, keyInIn) {
+                                            if (valueInIn.headword == 'true') {
+                                                if (response.data.result.entry[valueInIn.element]) {
+                                                    if (response.data.result.entry[valueInIn.element].$) {
+                                                        if ((values[key][0].findEntries) && values[key][0].findEntries[keyIn]) {
+                                                            values[key][0].findEntries[keyIn].head = response.data.result.entry[valueInIn.element].$;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }, function (response) {
+                                });
+                        });
+                    }
+                } else if (value[0].type == "container") {
+                    $scope.loadTextValueRecursive(value[0].containers, dictCode, entry, index, data);
+                }
+
+            });
+
         };
 
         $scope.init = function () {
