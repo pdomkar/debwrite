@@ -5,8 +5,16 @@
             <h2 ng-if="!editPage">{{dictionary.dict_name}} - Create new entry</h2>
         </div>
         <div class="panel-body">
-            <form class="form-horizontal p-t-r-b-l-1-1-1-3" name="newEntryForm" novalidate>
+            <form class="form-horizontal p-t-r-b-l-1-1-1-3" name="newEntryForm" ng-model-options="{ updateOn: 'blur' }"
+                  novalidate>
                 <div class="form-group" ng-repeat="(key, container) in newEntry track by $index" ng-include="'container_renderer.html'">
+                </div>
+                <div class="form-group">
+                    <label for="publishEntry" class="col-sm-2 control-label">Publish:</label>
+
+                    <div class="col-sm-10">
+                        <input type="checkbox" ng-model="publishEntry" name="publishEntry" id="publishEntry">
+                    </div>
                 </div>
                 <div class="row p-t-b-1">
                     <div class="col-sm-8">
@@ -37,7 +45,6 @@
             </form>
         </div>
     </div>
-    {{newEntry}}
     <script type="text/ng-template" id="container_renderer.html">
         <div class="row cont" ng-if="container[0] != undefined && container[0].type == 'container'">
             <label class="col-sm-2 control-label">
@@ -57,7 +64,6 @@
                                     <span class="fa fa-minus remove-container-button-icon" aria-hidden="true"></span>
                                 </div>
                             </a>
-
 
                     </div>
                 </div>
@@ -100,7 +106,7 @@
                          class="m-b-04" ng-repeat="val in oneContainer.values track by $index">
                         <div class="col-sm-5">
                             <input type="text"
-                                   ng-change="loadEntriesForSelect(searchText, oneContainer.dictCode, key, $index)"
+                                   ng-change="loadEntriesForSelect(searchText, key, $index, oneContainer)"
                                    ng-model="searchText" name="foo" class="form-control" id="{{key}}"
                                    ng-required="oneContainer.required || oneContainer.headword=='true'">
                         </div>

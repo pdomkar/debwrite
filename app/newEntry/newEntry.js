@@ -5,6 +5,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
     .controller('NewEntryCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location','$sce', function ($scope, $rootScope, $http, $routeParams, $location, $sce) {
         $scope.dictionary = null;
         $scope.newEntry = null;
+        $scope.publishEntry = true;
         $scope.editPage = false;
         $scope.previewUrl = "";
         $scope.previewTemplate = "_preview_xml_";
@@ -18,7 +19,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             $rootScope.loading = true;
             $scope.fileEntries = [];
             $scope.setFileEntriesRecursive($scope.newEntry);
-            $scope.entryXML = '<entry id="' + $scope.entryId + '">';
+            $scope.entryXML = '<entry id="' + $scope.entryId + '" publish="' + $scope.publishEntry + '">';
             $scope.filePaths = [];
             $scope.saveFiles(0, $close); // nasledne dokončí xml string a uloží položku
         };
@@ -373,6 +374,10 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             });
         };
 
+        $scope.$watch('newEntry', function (newVal, oldVal) {
+            $scope.preparePreview();
+        }, true);
+
         $scope.trustSrc = function(src) {
             return $sce.trustAsResourceUrl(src);
         };
@@ -389,7 +394,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                 if (templateSelected.type == "xslt") {
                     localStorage.setItem('previewXSLTTemplate', templateSelected.template);
                     localStorage.setItem('previewEntry', JSON.stringify($scope.newEntry));
-                    $scope.previewUrl = "previewXSLT.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type;
+                    $scope.previewUrl = "previewXSLT.html?dict_code=" + $routeParams.code + "&template_code=" + $scope.previewTemplate + "&template_type=" + templateSelected.type + "&entry_id=" + $scope.entryId;
                 } else if (templateSelected.type == "handlebar") {
                     localStorage.setItem('previewHandlebarTemplate', templateSelected.template);
                     localStorage.setItem('previewEntry', JSON.stringify($scope.newEntry));
@@ -448,11 +453,11 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             });
         };
 
-        $scope.loadEntriesForSelect = function (value, dictCode, entry, index) {
+        $scope.loadEntriesForSelect = function (value, entry, index, container) {
             if (value != undefined && value != null && value.length > 0) {
                 $http({
                     method: 'JSONP',
-                    url: 'https://abulafia.fi.muni.cz:9050/' + dictCode + '?callback=JSON_CALLBACK',
+                    url: 'https://abulafia.fi.muni.cz:9050/' + container.dictCode + '?callback=JSON_CALLBACK',
                     params: {
                         action: 'list',
                         search: value
@@ -460,7 +465,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                     responseType: 'json'
                 }).
                     then(function (response) {
-                        $scope.loadTextValueRecursive($scope.newEntry, dictCode, entry, index, response.data.entries);
+                        $scope.loadTextValueRecursive($scope.newEntry, container.dictCode, entry, index, response.data.entries, container);
                     }, function (response) {
                         $rootScope.loading = false;
                     });
@@ -468,13 +473,13 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
         };
 
 
-        $scope.loadTextValueRecursive = function (values, dictCode, entry, index, data) {
+        $scope.loadTextValueRecursive = function (values, dictCode, entry, index, data, container) {
             angular.forEach(values, function (value, key) {
                 if (key == entry) {
                     if (values[key]) {
-                        values[key][0].findEntries[index] = data;
+                        container.findEntries[index] = data;
                         //set name
-                        angular.forEach(values[key][0].findEntries, function (valueIn, keyIn) {
+                        angular.forEach(container.findEntries, function (valueIn, keyIn) {
                             $http({
                                 method: 'JSONP',
                                 url: 'https://abulafia.fi.muni.cz:9050/' + dictCode + '?callback=JSON_CALLBACK',
@@ -491,8 +496,8 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                                             if (valueInIn.headword == 'true') {
                                                 if (response.data.result.entry[valueInIn.element]) {
                                                     if (response.data.result.entry[valueInIn.element].$) {
-                                                        if ((values[key][0].findEntries) && values[key][0].findEntries[keyIn]) {
-                                                            values[key][0].findEntries[keyIn].head = response.data.result.entry[valueInIn.element].$;
+                                                        if ((container.findEntries) && container.findEntries[keyIn]) {
+                                                            container.findEntries[keyIn].head = response.data.result.entry[valueInIn.element].$;
                                                         }
                                                     }
                                                 }
@@ -504,7 +509,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                         });
                     }
                 } else if (value[0].type == "container") {
-                    $scope.loadTextValueRecursive(value[0].containers, dictCode, entry, index, data);
+                    $scope.loadTextValueRecursive(value[0].containers, dictCode, entry, index, data, container);
                 }
 
             });
@@ -546,9 +551,15 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                                 "type": "xslt",
                                 "template": value.template
                             });
+                            if (value.default == "true") {
+                                $scope.previewTemplate = value.code;
+                            }
                         });
                         angular.forEach($scope.dictionary.htemplates, function(value, key) {
                             $scope.templatesList.push({"code": value.code, "name": value.name, "parent": "Handlebar templates", "type": "handlebar", "template": value.template});
+                            if (value.default == "true") {
+                                $scope.previewTemplate = value.code;
+                            }
                         });
                         $scope.dictionary.schema = JSON.parse(response.data.schema).containers;
                         $scope.changeSelectOptionRecursive($scope.dictionary.schema);
@@ -579,6 +590,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                             }).
                                 then(function (response) {
                                     if (response.data.status == 'OK') {
+                                        $scope.publishEntry = response.data.result.entry["@publish"] == "true";
                                         $scope.newEntry = '{';
                                         $scope.generateNewEntryEditRecursive($scope.dictionary.schema, response.data.result.entry);
                                         var lastChar = ($scope.newEntry).slice(-2);

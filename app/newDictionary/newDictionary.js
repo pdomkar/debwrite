@@ -14,7 +14,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
         $scope.dictionaryUsersDisplayed = [];
         $scope.availableDicts = [];
         $scope.newDictionary = {
-            name: '', code: '', containers: [
+            name: '', code: '', publishDictionary: true, licence: '', containers: [
                 {
                     id: 0,
                     element: "hw",
@@ -208,6 +208,19 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     return '<div><b>' + data.login + '</b> (' + data.name + ', ' + data.email + ')</div>';
                 }
             }
+        };
+
+        //Array with licence which are display in selectbox
+        $scope.licences = [{name: 'BSD'}, {name: 'GNU GPL'}, {name: 'GNU LGPL'}, {name: 'MIT'}];
+
+        $scope.licenceMyConfig = {
+            create: true,
+            persist: false,
+            valueField: 'name',
+            labelField: 'name',
+            placeholder: 'Select licence . . .',
+            maxItems: 1,
+            searchField: ['name']
         };
 
         $scope.addContainer = function () {
@@ -693,6 +706,9 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     if (response.data.status == 'OK') {
                         $scope.newDictionary.name = response.data.dict_name;
                         $scope.newDictionary.code = response.data.dict_code;
+                        $scope.newDictionary.publishDictionary = JSON.parse(response.data.schema).publishDictionary;
+                        $scope.newDictionary.licence = JSON.parse(response.data.schema).licence;
+                        $scope.licences.push({name: $scope.newDictionary.licence});
                         $scope.newDictionary.containers = JSON.parse(response.data.schema).containers;
                         $scope.dictionaryUsers = response.data.users;
                         $scope.dictionaryOwner = response.data.owner;

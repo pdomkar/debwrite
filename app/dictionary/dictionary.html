@@ -11,6 +11,13 @@
                         <!--<a href="previewXSLT.html?dict_code={{dictionary.dict_code}}&entry_id={{entriesId}}&template_code={{htemplate.code}}" target="_blank">{{htemplate.name}}</a> |-->
                     <!--</span>-->
     </p>
+
+    <div class="form-group">
+        <div class="col-sm-6">
+            <input type="text" ng-model="searchTextEntry" ng-model-options="{ updateOn: 'blur' }" name="searchTextEntry"
+                   class="form-control" placeholder="Search in entry">
+        </div>
+    </div>
     <table st-table="entriesDisplayed" st-safe-src="entries" class="table table-striped">
         <thead>
         <tr>
@@ -77,7 +84,7 @@
         <tfoot>
             <tr>
                 <td colspan="7" class="text-center">
-                    <div st-pagination="" st-items-by-page="20" st-displayed-pages="10"></div>
+                    <div st-pagination="" st-items-by-page="50" st-displayed-pages="10"></div>
                 </td>
             </tr>
         </tfoot>
