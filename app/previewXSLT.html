@@ -25,6 +25,7 @@
                 xmlEntry = '<entry id="">';
                 xmlEntry += generateEntryXMLRecursive(previewEntry, false);
             }
+            console.log(xmlEntry);
             $.ajax({
                 url: "https://abulafia.fi.muni.cz:9050/" + getURLParameter('dict_code'),
                 jsonp: "callback",
@@ -73,7 +74,11 @@
                                             xmlEntry += '<' + key + ' elem_type="' + container.type + '">file path</' + key + '>';
                                         });
                                     }
-                                } else {
+                                } else if (container.type == 'crossreference') {
+                                    $.each(container.values, function (keyIn, valIn) {
+                                        xmlEntry += '<' + key + ' elem_type="' + container.type + '">'+valIn+'</' + key + '>';
+                                    });
+                                }  else {
                                     if (container.type == 'textarea') {
                                         var strVal = valueIn.replace(/\n/g, '-newLine-');
                                     } else {

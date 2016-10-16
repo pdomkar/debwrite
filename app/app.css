@@ -243,7 +243,6 @@ th[st-sort]
 a:hover
 {
   color: red;
-  position: relative;
 }
 
 a[data-title]:hover:after

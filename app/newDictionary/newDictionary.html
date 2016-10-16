@@ -49,91 +49,96 @@
 
                     <hr>
                     <h4>Entry structure:</h4>
-
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div ui-tree id="tree-root">
-                                <ol ui-tree-nodes ng-model="newDictionary.containers">
-                                    <li ng-repeat="container in newDictionary.containers" ui-tree-node ng-include="'container_renderer.html'"></li>
-                                </ol>
-                            </div>
-                        </div>
+                    <div class="btn-group" role="group" aria-label="container">
+                        <button ng-repeat="(key, value) in containersArr" ng-click="changeNewDictionaryContainers(key)" ng-class="newDictionary.dictionaryType == key ? 'btn btn-primary active' : 'btn btn-primary'">{{key}}</button>
                     </div>
 
-                    <script type="text/ng-template" id="container_renderer.html">
-                        <div ui-tree-handle class="tree-node tree-node-content row">
-                            <ng-form name="innerForm">
-                                <input type="hidden" ng-model="container.id">
-                                <label for="element" class="col-sm-1 control-label" data-nodrag>Element</label>
-                                <div class="col-sm-2" ng-class="{ 'has-error': innerForm.element.$error.required }" data-nodrag>
-                                    <input type="text" ng-model="container.element" name="element" class="form-control" id="element" required>
+                    <div ng-if="newDictionary.containers.length > 0">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div ui-tree id="tree-root">
+                                    <ol ui-tree-nodes ng-model="newDictionary.containers">
+                                        <li ng-repeat="container in newDictionary.containers" ui-tree-node ng-include="'container_renderer.html'"></li>
+                                    </ol>
                                 </div>
-                                <label for="label" class="col-sm-1 control-label" data-nodrag>Label</label>
-                                <div class="col-sm-1" ng-class="{ 'has-error': innerForm.label.$error.required }" data-nodrag>
-                                    <input type="text" ng-model="container.label" name="label" class="form-control" id="label" required>
-                                </div>
-                                <label for="headword" class="col-sm-1 control-label" data-nodrag>Headword</label>
-                                <div class="col-sm-1" data-nodrag>
-                                    <input type="radio" name="headword" ng-change="changeHeadword(container.id)" ng-model="container.headword" id="headword" value="true">
-                                </div>
-                                <label for="multiple" class="col-sm-1 control-label" data-nodrag>Multiple</label>
-                                <div class="col-sm-1" data-nodrag>
-                                    <input type="checkbox" ng-model="container.multiple" id="multiple" >
-                                </div>
-                                <label for="required" class="col-sm-1 control-label" data-nodrag>Required</label>
-                                <div class="col-sm-1" data-nodrag>
-                                    <input type="checkbox" ng-model="container.required" id="required" >
-                                </div>
-                                <label for="type" class="col-sm-1 control-label" data-nodrag>Type</label>
-                                <div class="col-sm-1" ng-class="{ 'has-error': innerForm.type.$error.required }">
-                                    <select ng-model="container.type" name="type" class="form-control" id="type" data-nodrag required>
-                                        <option value="text">text</option>
-                                        <option value="textarea">textarea</option>
-                                        <option value="number">number</option>
-                                        <option value="container">container</option>
-                                        <option value="file">file</option>
-                                        <option value="select">select</option>
-                                        <option value="crossreference">crossreference</option>
-                                    </select></div>
-                                <label ng-show="container.type=='select'" for="options" class="col-sm-1 control-label" data-nodrag>Options</label>
-                                <div ng-show="container.type=='select'" ng-class="{ 'has-error': innerForm.options.$error.required }" class="col-sm-2" data-nodrag>
-                                    <input type="text" ng-model="container.options" name="options" class="form-control" id="options" ng-required="container.type == 'select'" placeholder="Separate by comma ','">
-                                </div>
-                                <label ng-show="container.type=='crossreference'" for="crossreference_dict"
-                                       class="col-sm-1 control-label" data-nodrag>Cross ref dict</label>
-
-                                <div ng-show="container.type=='crossreference'" class="col-sm-2"
-                                     ng-class="{ 'has-error': innerForm.crossreference_dict.$error.required }">
-                                    <select ng-model="container.crossreference_dict" name="crossreference_dict"
-                                            class="form-control" id="crossreference_dict" data-nodrag
-                                            ng-required="container.type == 'crossreference'">
-                                        <option style="display:none" value="">Choose dict</option>
-                                        <option ng-repeat="availableDict in availableDicts track by availableDict.code"
-                                                value="{{availableDict.code}}">{{availableDict.name}}
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <a data-nodrag ng-click="removeContainer(newDictionary.containers, container.id)"
-                                   class="btn btn-danger pull-right" title="Remove element">
-                                    <i class="fa fa-trash" aria-hidden="true"></i>
-                                </a>
-                            </ng-form>
+                            </div>
                         </div>
-                        <ol ng-if="container.type!='container'" ui-tree-nodes="" data-nodrop-enabled="true" ng-model="container.containers" ng-class="{hidden: collapsed}">
-                            <li ng-repeat="container in container.containers" ui-tree-node ng-include="'container_renderer.html'">
-                            </li>
-                        </ol>
 
-                        <ol ng-if="container.type=='container'" ui-tree-nodes="" ng-model="container.containers" ng-class="{hidden: collapsed}">
-                            <li ng-repeat="container in container.containers" ui-tree-node ng-include="'container_renderer.html'">
-                            </li>
-                        </ol>
-                    </script>
+                        <script type="text/ng-template" id="container_renderer.html">
+                            <div ui-tree-handle class="tree-node tree-node-content row">
+                                <ng-form name="innerForm">
+                                    <input type="hidden" ng-model="container.id">
+                                    <label for="element" class="col-sm-1 control-label" data-nodrag>Element</label>
+                                    <div class="col-sm-2" ng-class="{ 'has-error': innerForm.element.$error.required }" data-nodrag>
+                                        <input type="text" ng-model="container.element" name="element" class="form-control" id="element" required>
+                                    </div>
+                                    <label for="label" class="col-sm-1 control-label" data-nodrag>Label</label>
+                                    <div class="col-sm-1" ng-class="{ 'has-error': innerForm.label.$error.required }" data-nodrag>
+                                        <input type="text" ng-model="container.label" name="label" class="form-control" id="label" required>
+                                    </div>
+                                    <label for="headword" class="col-sm-1 control-label" data-nodrag>Headword</label>
+                                    <div class="col-sm-1" data-nodrag>
+                                        <input type="radio" name="headword" ng-change="changeHeadword(container.id)" ng-model="container.headword" id="headword" value="true">
+                                    </div>
+                                    <label for="multiple" class="col-sm-1 control-label" data-nodrag>Multiple</label>
+                                    <div class="col-sm-1" data-nodrag>
+                                        <input type="checkbox" ng-model="container.multiple" id="multiple" >
+                                    </div>
+                                    <label for="required" class="col-sm-1 control-label" data-nodrag>Required</label>
+                                    <div class="col-sm-1" data-nodrag>
+                                        <input type="checkbox" ng-model="container.required" id="required" >
+                                    </div>
+                                    <label for="type" class="col-sm-1 control-label" data-nodrag>Type</label>
+                                    <div class="col-sm-1" ng-class="{ 'has-error': innerForm.type.$error.required }">
+                                        <select ng-model="container.type" name="type" class="form-control" id="type" data-nodrag required>
+                                            <option value="text">text</option>
+                                            <option value="textarea">textarea</option>
+                                            <option value="number">number</option>
+                                            <option value="container">container</option>
+                                            <option value="file">file</option>
+                                            <option value="select">select</option>
+                                            <option value="crossreference">crossreference</option>
+                                        </select></div>
+                                    <label ng-show="container.type=='select'" for="options" class="col-sm-1 control-label" data-nodrag>Options</label>
+                                    <div ng-show="container.type=='select'" ng-class="{ 'has-error': innerForm.options.$error.required }" class="col-sm-2" data-nodrag>
+                                        <input type="text" ng-model="container.options" name="options" class="form-control" id="options" ng-required="container.type == 'select'" placeholder="Separate by comma ','">
+                                    </div>
+                                    <label ng-show="container.type=='crossreference'" for="crossreference_dict"
+                                           class="col-sm-1 control-label" data-nodrag>Cross ref dict</label>
 
-                    <button type="button" ng-click="addContainer()" class="btn btn-primary">
-                        Add element
-                    </button>
+                                    <div ng-show="container.type=='crossreference'" class="col-sm-2"
+                                         ng-class="{ 'has-error': innerForm.crossreference_dict.$error.required }">
+                                        <select ng-model="container.crossreference_dict" name="crossreference_dict"
+                                                class="form-control" id="crossreference_dict" data-nodrag
+                                                ng-required="container.type == 'crossreference'">
+                                            <option style="display:none" value="">Choose dict</option>
+                                            <option ng-repeat="availableDict in availableDicts track by availableDict.code"
+                                                    value="{{availableDict.code}}">{{availableDict.name}}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <a data-nodrag ng-click="removeContainer(newDictionary.containers, container.id)"
+                                       class="btn btn-danger pull-right" title="Remove element">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </a>
+                                </ng-form>
+                            </div>
+                            <ol ng-if="container.type!='container'" ui-tree-nodes="" data-nodrop-enabled="true" ng-model="container.containers" ng-class="{hidden: collapsed}">
+                                <li ng-repeat="container in container.containers" ui-tree-node ng-include="'container_renderer.html'">
+                                </li>
+                            </ol>
+
+                            <ol ng-if="container.type=='container'" ui-tree-nodes="" ng-model="container.containers" ng-class="{hidden: collapsed}">
+                                <li ng-repeat="container in container.containers" ui-tree-node ng-include="'container_renderer.html'">
+                                </li>
+                            </ol>
+                        </script>
+
+                        <button type="button" ng-click="addContainer()" class="btn btn-primary">
+                            Add element
+                        </button>
+                    </div>
 
                     <div class="clearfix"></div>
 

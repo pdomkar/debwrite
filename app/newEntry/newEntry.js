@@ -455,6 +455,10 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
 
         $scope.loadEntriesForSelect = function (value, entry, index, container) {
             if (value != undefined && value != null && value.length > 0) {
+                if( container.dictCode == '-') {
+                    container.dictCode = $scope.dictionary.dict_code;
+                }
+                console.log(container.dictCode);
                 $http({
                     method: 'JSONP',
                     url: 'https://abulafia.fi.muni.cz:9050/' + container.dictCode + '?callback=JSON_CALLBACK',

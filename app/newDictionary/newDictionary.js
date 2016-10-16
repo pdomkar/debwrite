@@ -13,8 +13,9 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
         $scope.addXSLTTemplateShowBox = false;
         $scope.dictionaryUsersDisplayed = [];
         $scope.availableDicts = [];
-        $scope.newDictionary = {
-            name: '', code: '', publishDictionary: true, licence: '', containers: [
+
+        $scope.containersArr = {
+            Main: [
                 {
                     id: 0,
                     element: "hw",
@@ -184,7 +185,79 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                     crossreference_dict: null,
                     containers: []
                 }
-            ]
+            ],
+            SecondExample:
+                [
+                    {
+                        id: 0,
+                        element: "hh",
+                        label: "hehadword",
+                        headword: "true",
+                        multiple: false,
+                        required: true,
+                        type: "text",
+                        options: "",
+                        crossreference_dict: null,
+                        containers: []
+                    },
+                    {
+                        id: 12,
+                        element: "reference",
+                        label: "references",
+                        headword: "false",
+                        multiple: true,
+                        required: false,
+                        type: "textarea",
+                        options: "",
+                        crossreference_dict: null,
+                        containers: []
+                    },
+                    {
+                        id: 13,
+                        element: "comment",
+                        label: "comments",
+                        headword: "false",
+                        multiple: true,
+                        required: false,
+                        type: "textarea",
+                        options: "",
+                        crossreference_dict: null,
+                        containers: []
+                    }
+                ],
+            ThirdExample    :
+                [
+                    {
+                        id: 0,
+                        element: "hh",
+                        label: "hehadword",
+                        headword: "true",
+                        multiple: false,
+                        required: true,
+                        type: "text",
+                        options: "",
+                        crossreference_dict: null,
+                        containers: []
+                    },
+                    {
+                        id: 13,
+                        element: "comment",
+                        label: "comments",
+                        headword: "false",
+                        multiple: true,
+                        required: false,
+                        type: "textarea",
+                        options: "",
+                        crossreference_dict: null,
+                        containers: []
+                    }
+                ]
+        };
+
+
+
+        $scope.newDictionary = {
+            name: '', code: '', publishDictionary: true, licence: '', dictionaryType: null, containers: []
         };
 
         $scope.addedUser = {login: '', perm: ''};
@@ -708,6 +781,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                         $scope.newDictionary.code = response.data.dict_code;
                         $scope.newDictionary.publishDictionary = JSON.parse(response.data.schema).publishDictionary;
                         $scope.newDictionary.licence = JSON.parse(response.data.schema).licence;
+                        $scope.newDictionary.dictionaryType = JSON.parse(response.data.schema).dictionaryType;
                         $scope.licences.push({name: $scope.newDictionary.licence});
                         $scope.newDictionary.containers = JSON.parse(response.data.schema).containers;
                         $scope.dictionaryUsers = response.data.users;
@@ -779,6 +853,13 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
                 });
         };
 
+        $scope.changeNewDictionaryContainers = function(value) {
+            if(value != null) {
+                $scope.newDictionary.dictionaryType = value;
+                $scope.newDictionary.containers = $scope.containersArr[value];
+            }
+        };
+
         $scope.init = function () {
             $rootScope.loading = true;
             $rootScope.dictDetail = $routeParams.code;
@@ -789,6 +870,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
             } else {
                 $scope.editPage = false;
                 $rootScope.loading = false;
+                $scope.changeNewDictionaryContainers(null);
             }
             $window.scrollTo(0, 0);
         };
