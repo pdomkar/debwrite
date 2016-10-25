@@ -81,6 +81,7 @@ angular.module('debwrite.dictionary', ['smart-table', 'ui.bootstrap'])
                                             if (valueIn.headword == 'true') {
                                                 if (response.data.result.entry[valueIn.element]) {
                                                     if (response.data.result.entry[valueIn.element].$) {
+                                                        $scope.entries[key].publish = response.data.result.entry["@publish"];
                                                         $scope.entries[key].head = response.data.result.entry[valueIn.element].$;
                                                     }
                                                 }

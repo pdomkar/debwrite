@@ -5,7 +5,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
     .controller('NewEntryCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location','$sce', function ($scope, $rootScope, $http, $routeParams, $location, $sce) {
         $scope.dictionary = null;
         $scope.newEntry = null;
-        $scope.publishEntry = true;
+        $scope.publishEntry = false;
         $scope.editPage = false;
         $scope.previewUrl = "";
         $scope.previewTemplate = "_preview_xml_";
@@ -227,36 +227,39 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
             delete entry["meta"];
 
             angular.forEach(values, function(container, key) {
-                if( container.type == "container" ) {
-                    if (Array.isArray(entry[container.element])) {
-                        $scope.newEntry += '"' + container.element + '": [';
-                        angular.forEach(entry[container.element], function (entryVal, key) {
-                            $scope.newEntry += '{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {';
-                            $scope.generateNewEntryEditRecursive(container.containers, entryVal);
-                            $scope.newEntry += '},"values": ""}, ';
-                        });
-                        $scope.newEntry += '], ';
-                    } else {
-                        $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {';
-                        $scope.generateNewEntryEditRecursive(container.containers, entry[container.element]);
-                        $scope.newEntry += '},"values": ""}], ';
-                    }
-                } else if( container.type == "number" ) {
-                        if(Array.isArray(entry[container.element])) {
+                if (entry[container.element] != undefined) { // jen kdyz je element ze struktury v zaznamu
+                    if (container.type == "container") {
+                        if (Array.isArray(entry[container.element])) {
+                            $scope.newEntry += '"' + container.element + '": [';
+                            angular.forEach(entry[container.element], function (entryVal, key) {
+                                $scope.newEntry += '{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {';
+                                $scope.generateNewEntryEditRecursive(container.containers, entryVal);
+                                $scope.newEntry += '},"values": ""}, ';
+                            });
+                            $scope.newEntry += '], ';
+                        } else {
+                            $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {';
+                            $scope.generateNewEntryEditRecursive(container.containers, entry[container.element]);
+                            $scope.newEntry += '},"values": ""}], ';
+                        }
+                    } else if (container.type == "number") {
+                        if (Array.isArray(entry[container.element])) {
                             var valStr = '';
-                            angular.forEach(entry[container.element], function(entryVal, key) {
+                            angular.forEach(entry[container.element], function (entryVal, key) {
                                 valStr += entryVal.$ + ', ';
                             });
                             var lastChar = (valStr).slice(-2);
-                            if (lastChar == ', ') { valStr = (valStr).slice(0, -2); }
+                            if (lastChar == ', ') {
+                                valStr = (valStr).slice(0, -2);
+                            }
                         } else {
                             var valStr = entry[container.element].$;
                         }
                         $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "values": [' + valStr + ']}], ';
-                } else if( container.type == "file" ) {
-                        if(Array.isArray(entry[container.element])) {
+                    } else if (container.type == "file") {
+                        if (Array.isArray(entry[container.element])) {
                             var valStr = '';
-                            angular.forEach(entry[container.element], function(entryVal, key) {
+                            angular.forEach(entry[container.element], function (entryVal, key) {
                                 if (entryVal.$ == undefined || entryVal.$ == "undefined") {
                                     valStr += '';
                                 } else {
@@ -264,55 +267,57 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                                 }
                             });
                             var lastChar = (valStr).slice(-2);
-                            if (lastChar == ', ') { valStr = (valStr).slice(0, -2); }
+                            if (lastChar == ', ') {
+                                valStr = (valStr).slice(0, -2);
+                            }
                         } else {
-                            if(entry[container.element].$ == undefined || entry[container.element].$ == "undefined") {
+                            if (entry[container.element].$ == undefined || entry[container.element].$ == "undefined") {
                                 var valStr = '';
                             } else {
                                 var valStr = '"' + entry[container.element].$ + '"';
                             }
                         }
                         $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "values": [{}], "fileValues": [' + valStr + ']}], ';
-                } else if (container.type == "crossreference") {
-                    if (Array.isArray(entry[container.element])) {
-                        var valStr = '';
-                        var entryJson = '';
-                        angular.forEach(entry[container.element], function (entryVal, key) {
-                            if (entryVal["@entry_id"] == undefined || entryVal.$ == undefined || entryVal["@entry_id"] == "undefined") {
-                                valStr += '';
-                            } else {
-                                valStr += '"' + entryVal["@entry_id"] + '", ';
-                                entryJson += '[' + JSON.stringify({
-                                        "id": "" + entryVal["@entry_id"] + "",
-                                        "head": "" + entryVal.$ + ""
-                                    }) + '], ';
+                    } else if (container.type == "crossreference") {
+                        if (Array.isArray(entry[container.element])) {
+                            var valStr = '';
+                            var entryJson = '';
+                            angular.forEach(entry[container.element], function (entryVal, key) {
+                                if (entryVal["@entry_id"] == undefined || entryVal.$ == undefined || entryVal["@entry_id"] == "undefined") {
+                                    valStr += '';
+                                } else {
+                                    valStr += '"' + entryVal["@entry_id"] + '", ';
+                                    entryJson += '[' + JSON.stringify({
+                                            "id": "" + entryVal["@entry_id"] + "",
+                                            "head": "" + entryVal.$ + ""
+                                        }) + '], ';
+                                }
+                            });
+                            var lastChar = (valStr).slice(-2);
+                            if (lastChar == ', ') {
+                                valStr = (valStr).slice(0, -2);
                             }
-                        });
-                        var lastChar = (valStr).slice(-2);
-                        if (lastChar == ', ') {
-                            valStr = (valStr).slice(0, -2);
-                        }
 
-                        var lastCharE = (entryJson).slice(-2);
-                        if (lastCharE == ', ') {
-                            entryJson = (entryJson).slice(0, -2);
-                        }
-                    } else {
-                        if (entry[container.element]["@entry_id"] == undefined || entry[container.element]["@entry_id"] == "undefined") {
-                            var valStr = '';
+                            var lastCharE = (entryJson).slice(-2);
+                            if (lastCharE == ', ') {
+                                entryJson = (entryJson).slice(0, -2);
+                            }
                         } else {
-                            var valStr = '"' + entry[container.element]["@entry_id"] + '"';
-                            entryJson = '[' + JSON.stringify({
-                                    "id": entry[container.element]["@entry_id"],
-                                    "head": entry[container.element].$
-                                }) + ']';
+                            if (entry[container.element]["@entry_id"] == undefined || entry[container.element]["@entry_id"] == "undefined") {
+                                var valStr = '';
+                            } else {
+                                var valStr = '"' + entry[container.element]["@entry_id"] + '"';
+                                entryJson = '[' + JSON.stringify({
+                                        "id": entry[container.element]["@entry_id"],
+                                        "head": entry[container.element].$
+                                    }) + ']';
+                            }
                         }
-                    }
-                    $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "dictCode": "' + container.crossreference_dict + '", "findEntries": [' + entryJson + '], "values": [' + valStr + ']}], ';
-                } else {
-                        if(Array.isArray(entry[container.element])) {
+                        $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "dictCode": "' + container.crossreference_dict + '", "findEntries": [' + entryJson + '], "values": [' + valStr + ']}], ';
+                    } else {
+                        if (Array.isArray(entry[container.element])) {
                             var valStr = '';
-                            angular.forEach(entry[container.element], function(entryVal, key) {
+                            angular.forEach(entry[container.element], function (entryVal, key) {
                                 if (entryVal.$ == undefined || entryVal.$ == "undefined") {
                                     valStr += '"", ';
                                 } else {
@@ -320,7 +325,9 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                                 }
                             });
                             var lastChar = (valStr).slice(-2);
-                            if (lastChar == ', ') { valStr = (valStr).slice(0, -2); }
+                            if (lastChar == ', ') {
+                                valStr = (valStr).slice(0, -2);
+                            }
                         } else {
                             if (entry[container.element].$ == undefined || entry[container.element].$ == "undefined") {
                                 var valStr = '""';
@@ -329,6 +336,7 @@ angular.module('debwrite.newEntry', ['ng-file-model', 'ngSanitize'])
                             }
                         }
                         $scope.newEntry += '"' + container.element + '": [{"id": ' + container.id + ', "label": "' + container.label + '", "headword": "' + container.headword + '", "multiple": ' + container.multiple + ', "required": ' + container.required + ', "type": "' + container.type + '", "options": ' + JSON.stringify(container.options) + ', "containers": {}, "values": [' + valStr + ']}], ';
+                    }
                 }
             });
         };

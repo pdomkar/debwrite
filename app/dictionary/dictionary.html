@@ -42,6 +42,12 @@
         <tbody data-link="row" class="rowlink">
         <tr ng-repeat="entry in entriesDisplayed">
             <td>
+                <span ng-if="entry.publish == 'true'" style="color: #00CC00; font-weight:bold;">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                </span>
+                <span ng-if="entry.publish != 'true'" style="color: #FF0000; font-weight:bold;">
+                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
+                </span>
                 <a ng-if="defaultTemplate == null"
                    href="https://abulafia.fi.muni.cz:9050/{{dictionary.dict_code}}?action=get&entry_id={{entry.id}}&format=xml"
                    target="_blank">{{entry.head}}</a>

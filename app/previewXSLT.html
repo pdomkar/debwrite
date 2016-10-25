@@ -19,7 +19,7 @@
             var previewEntry = JSON.parse(localStorage.getItem('previewEntry'));
             entryId = null;
             xmlEntry = null;
-            if (getURLParameter('entry_id') != '') {
+            if (getURLParameter('entry_id') != undefined && getURLParameter('entry_id') != '') {
                 entryId = getURLParameter('entry_id');
             } else {
                 xmlEntry = '<entry id="">';

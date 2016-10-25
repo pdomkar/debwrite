@@ -257,7 +257,7 @@ angular.module('debwrite.newDictionary', ['ui.tree', 'selectize'])
 
 
         $scope.newDictionary = {
-            name: '', code: '', publishDictionary: true, licence: '', dictionaryType: null, containers: []
+            name: '', code: '', publishDictionary: false, licence: '', dictionaryType: null, containers: []
         };
 
         $scope.addedUser = {login: '', perm: ''};
