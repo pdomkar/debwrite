@@ -29,11 +29,11 @@
                     <td>{{dictionary.code}}</td>
                     <td class="text-right rowlink-skip">
                         <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default"
-                           data-title="Browse dictionary">
+                           tooltip="Browse dictionary">
                             <i class="fa fa-search" aria-hidden="true"></i>
                         </a>
                         <a href="https://abulafia.fi.muni.cz:9050/admin?action=export&code={{dictionary.code}}&format=xml"
-                           target="_blank" class="btn btn-xs btn-default" data-title="Export XML">
+                           target="_blank" class="btn btn-xs btn-default" tooltip="Export XML">
                             <i class="fa fa-upload" aria-hidden="true"></i>
                         </a>
                     </td>
@@ -72,11 +72,11 @@
                 <td>{{dictionary.code}}</td>
                 <td class="text-right rowlink-skip">
                     <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default"
-                       data-title="Browse dictionary">
+                       tooltip="Browse dictionary">
                         <i class="fa fa-search" aria-hidden="true"></i>
                     </a>
                     <a href="https://abulafia.fi.muni.cz:9050/admin?action=export&code={{dictionary.code}}&format=xml"
-                       target="_blank" class="btn btn-xs btn-default" data-title="Export XML">
+                       target="_blank" class="btn btn-xs btn-default" tooltip="Export XML">
                         <i class="fa fa-upload" aria-hidden="true"></i>
                     </a>
                 </td>
@@ -115,23 +115,23 @@
                     <td>{{dictionary.code}}</td>
                     <td class="text-right rowlink-skip">
                         <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default"
-                           data-title="Browse dictionary">
+                           tooltip="Browse dictionary">
                             <i class="fa fa-search" aria-hidden="true"></i>
                         </a>
                         <a href="https://abulafia.fi.muni.cz:9050/admin?action=export&code={{dictionary.code}}&format=xml"
-                           target="_blank" class="btn btn-xs btn-default" data-title="Export XML">
+                           target="_blank" class="btn btn-xs btn-default" tooltip="Export XML">
                             <i class="fa fa-upload" aria-hidden="true"></i>
                         </a>
                         <a ng-href="#dictionaries/import/{{dictionary.code}}" class="btn btn-xs btn-default"
-                           data-title="Import XML">
+                           tooltip="Import XML">
                             <i class="fa fa-download" aria-hidden="true"></i>
                         </a>
                         <a ng-href="#/newDictionary/{{dictionary.code}}" class="btn btn-xs btn-info"
-                           data-title="Edit settings">
+                           tooltip="Edit settings">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
                         </a>
                         <a ng-click="removeDictionary($event, dictionary.code)" class="btn  btn-xs btn-danger"
-                           data-title="Remove dictionary">
+                           tooltip="Remove dictionary">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </a>
                     </td>
@@ -170,22 +170,22 @@
                 <td>{{dictionary.code}}</td>
                 <td class="text-right rowlink-skip">
                     <a ng-href="#/dictionaries/{{dictionary.code}}" class="btn btn-xs btn-default"
-                       data-title="Browse dictionary">
+                       tooltip="Browse dictionary">
                         <i class="fa fa-search" aria-hidden="true"></i>
                     </a>
                     <a href="https://abulafia.fi.muni.cz:9050/admin?action=export&code={{dictionary.code}}&format=xml"
-                       target="_blank" class="btn btn-xs btn-default" data-title="Export XML">
+                       target="_blank" class="btn btn-xs btn-default" tooltip="Export XML">
                         <i class="fa fa-upload" aria-hidden="true"></i>
                     </a>
-                    <button type="button" class="btn  btn-xs btn-default" data-title="Import XML">
+                    <button type="button" class="btn  btn-xs btn-default" tooltip="Import XML">
                         <i class="fa fa-download" aria-hidden="true"></i>
                     </button>
                     <a ng-href="#/newDictionary/{{dictionary.code}}" class="btn btn-xs btn-info"
-                       data-title="Edit settings">
+                       tooltip="Edit settings">
                         <i class="fa fa-pencil" aria-hidden="true"></i>
                     </a>
                     <a ng-click="removeDictionary($event, dictionary.code)" class="btn btn-xs btn-danger"
-                       data-title="Remove dictionary">
+                       tooltip="Remove dictionary">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                 </td>

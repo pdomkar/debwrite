@@ -76,12 +76,12 @@
             <td class="text-right rowlink-skip">
                 <a ng-href="#/newEntry/{{dictionary.dict_code}}/{{entry.id}}"
                    ng-if="dictionary.current_perm == 'm' || dictionary.current_perm == 'a' || dictionary.current_perm == 'e'"
-                   type="button" class="btn  btn-xs btn-info" data-title="Edit entry">
+                   type="button" class="btn  btn-xs btn-info" tooltip="Edit entry">
                     <i class="fa fa-pencil" aria-hidden="true"></i> <strong>Edit entry</strong>
                 </a>
                 <a ng-click="removeEntry($event, entry.id)"
                    ng-if="dictionary.current_perm == 'm' || dictionary.current_perm == 'a'"
-                   class="btn btn-xs btn-danger" data-title="Remove entry">
+                   class="btn btn-xs btn-danger" tooltip="Remove entry">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </a>
             </td>

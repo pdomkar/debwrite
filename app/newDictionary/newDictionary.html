@@ -11,7 +11,8 @@
                     <div class="form-group" show-errors>
                         <label for="name" class="col-sm-2 control-label">Dictionary name:</label>
                         <div class="col-sm-10">
-                            <input type="text" ng-model="newDictionary.name" name="name" class="form-control" id="name" required>
+                            <input type="text" ng-model="newDictionary.name" name="name" class="form-control" id="name"
+                                   ng-blur="changeDictCode()" required>
                             <p class="help-block" ng-if="newDictionaryForm.name.$error.required">The dictionary name is required</p>
                         </div>
                     </div>
@@ -143,7 +144,7 @@
                     <div class="clearfix"></div>
 
                     <button ng-if="editPage" type="button" ng-click="saveDictionary()" class="btn btn-success pull-right">
-                        Edit dictionary
+                        Save dictionary
                     </button>
                     <button ng-if="!editPage" type="button" ng-click="saveDictionary()" class="btn btn-success pull-right">
                         Create dictionary
@@ -230,7 +231,7 @@
                             </td>
                             <td class="text-right">
                                 <a ng-if="user.login != dictionaryOwner" ng-click="removeUser($event, user.login)"
-                                   class="btn  btn-xs btn-danger" data-title="Remove user">
+                                   class="btn  btn-xs btn-danger" tooltip="Remove user">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </a>
                             </td>
@@ -267,13 +268,6 @@
                                         <p class="help-block"  style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.name.$error.required">The name of xslt template is required</p>
                                     </div>
                                 </div>
-                                <div class="form-group" style="display: inline" show-errors="">
-                                    <label for="codeAddedXT" class="col-sm-1 control-label" data-nodrag>Code</label>
-                                    <div class="col-sm-11" data-nodrag>
-                                        <input type="text" style="width: 50%" ng-model="addedXSLTTemplate.code" name="code" class="form-control" id="codeAddedXT" required>
-                                        <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.code.$error.required">The code of xslt template is required</p>
-                                    </div>
-                                </div>
                                 <div class="form-group" show-errors="">
                                     <label for="templateAddedxT" class="col-sm-1 control-label" data-nodrag>Template</label>
                                     <div class="col-sm-11" data-nodrag>
@@ -291,11 +285,11 @@
                                 </div>
                                 <div class="form-group text-right">
                                     <a ng-click="generateXSLTTemplate(addedXSLTTemplate)" class="btn  btn-info"
-                                       data-title="Generate from setting">
+                                       tooltip="Generate from setting">
                                         <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
                                     </a>
                                     <a ng-click="addXSLTTemplate(xsltForm)" class="btn btn-success"
-                                       data-title="Create XSLT template">
+                                       tooltip="Create XSLT template">
                                         <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create
                                     </a>
                                 </div>
@@ -315,13 +309,6 @@
                                             <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.name.$error.required">The name of xslt template is required</p>
                                         </div>
                                     </div>
-                                    <div class="form-group" style="display: inline" show-errors="">
-                                        <label for="codeXT" class="col-sm-1 control-label" data-nodrag>Code</label>
-                                        <div class="col-sm-11" data-nodrag>
-                                            <input type="text" style="width: 50%" ng-model="xsltTemplate.code" name="code" class="form-control" id="codeXT" disabled="disabled" required>
-                                            <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="xsltForm.code.$error.required">The code of xslt template is required</p>
-                                        </div>
-                                    </div>
                                     <div class="form-group" show-errors="">
                                         <label for="templateXT" class="col-sm-1 control-label" data-nodrag>Template</label>
                                         <div class="col-sm-11" data-nodrag>
@@ -339,15 +326,15 @@
                                     </div>
                                     <div class="form-group text-right">
                                         <a ng-click="generateXSLTTemplate(xsltTemplate)" class="btn btn-info"
-                                           data-title="Generate from setting">
+                                           tooltip="Generate from setting">
                                             <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
                                         </a>
                                         <a ng-click="editXSLTTemplate(xsltTemplate, xsltForm)" class="btn btn-success"
-                                           data-title="Save XSLT template">
+                                           tooltip="Save XSLT template">
                                             <i class="fa fa-save" aria-hidden="true"></i>&nbsp; Save
                                         </a>
                                         <a ng-click="removeXSLTTemplate($event, xsltTemplate)" class="btn btn-danger"
-                                           data-title="Remove XSLT template">
+                                           tooltip="Remove XSLT template">
                                             <i class="fa fa-trash" aria-hidden="true"></i>&nbsp; Remove
                                         </a>
                                     </div>
@@ -385,13 +372,6 @@
                                         <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="handlebarForm.name.$error.required">The name of handlebar template is required</p>
                                     </div>
                                 </div>
-                                <div class="form-group" style="display: inline;" show-errors="">
-                                    <label for="codeAddedHT" class="col-sm-1 control-label" data-nodrag>Code</label>
-                                    <div class="col-sm-11" data-nodrag>
-                                        <input type="text" style="width: 50%" ng-model="addedHtmlTemplate.code" name="code" class="form-control" id="codeAddedHT" required>
-                                        <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="handlebarForm.code.$error.required">The code of handlebar template is required</p>
-                                    </div>
-                                </div>
                                 <div class="form-group" show-errors="">
                                     <label for="templateAddedHT" class="col-sm-1 control-label" data-nodrag>Template</label>
                                     <div class="col-sm-11" data-nodrag>
@@ -409,11 +389,11 @@
                                 </div>
                                 <div class="form-group text-right">
                                     <a ng-click="generateHandlebar(addedHtmlTemplate)" class="btn  btn-info"
-                                       data-title="Generate from setting">
+                                       tooltip="Generate from setting">
                                         <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
                                     </a>
                                     <a ng-click="addHandlebar(handlebarForm)" class="btn btn-success"
-                                       data-title="Create handlebar">
+                                       tooltip="Create handlebar">
                                         <i class="fa fa-plus" aria-hidden="true"></i>&nbsp; Create
                                     </a>
                                 </div>
@@ -433,13 +413,6 @@
                                             <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="handlebarForm.name.$error.required">The name of handlebar template is required</p>
                                         </div>
                                     </div>
-                                    <div class="form-group" style="display:inline;" show-errors="">
-                                        <label for="codeHT" class="col-sm-1 control-label" data-nodrag>Code</label>
-                                        <div class="col-sm-11" data-nodrag>
-                                            <input type="text" style="width: 50%;" ng-model="htmlTemplate.code" name="code" class="form-control" id="codeHT" disabled="disabled" required>
-                                            <p class="help-block" style="margin-top: -27px; left: 52%; position: absolute;" ng-if="handlebarForm.code.$error.required">The code of handlebar template is required</p>
-                                        </div>
-                                    </div>
                                     <div class="form-group" show-errors="">
                                         <label for="templateHT" class="col-sm-1 control-label" data-nodrag>Template</label>
                                         <div class="col-sm-11" data-nodrag>
@@ -457,15 +430,15 @@
                                     </div>
                                     <div class="form-group text-right">
                                         <a ng-click="generateHandlebar(htmlTemplate)" class="btn btn-info"
-                                           data-title="Generate from setting">
+                                           tooltip="Generate from setting">
                                             <i class="fa fa-star" aria-hidden="true"></i>&nbsp; Generate from setting
                                         </a>
                                         <a ng-click="editHandlebar(htmlTemplate, handlebarForm)" class="btn btn-success"
-                                           data-title="Save handlebar">
+                                           tooltip="Save handlebar">
                                             <i class="fa fa-save" aria-hidden="true"></i>&nbsp; Save
                                         </a>
                                         <a ng-click="removeHandlebar($event, htmlTemplate)" class="btn btn-danger"
-                                           data-title="Remove handlebar">
+                                           tooltip="Remove handlebar">
                                             <i class="fa fa-trash" aria-hidden="true"></i>&nbsp; Remove
                                         </a>
                                     </div>
