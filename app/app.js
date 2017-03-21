@@ -220,20 +220,20 @@ config(['$locationProvider', '$routeProvider', function($locationProvider, $rout
                         if (left < 0) {
                             left = 0;
                         }
-                        tag.fadeIn(300).css({'top': top, 'left': left});
+                        tag.fadeIn(200).css({'top': top, 'left': left});
 
                         return false;
                     });
 
                     if (attr.tooltipDismiss && attr.tooltipDismiss == 'click') {
                         tag.on('click', function () {
-                            tag.fadeOut(300);
+                            tag.fadeOut(200);
                         });
                     } else {
                         $(element).on('mouseleave', function (evt) {
-
-                            tag.fadeOut(300);
-
+                            tag.fadeOut(200);
+                        }).on('click', function (evt) {
+                            tag.remove();
                         });
                     }
                 }
